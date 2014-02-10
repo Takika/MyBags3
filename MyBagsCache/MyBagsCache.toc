@@ -1,0 +1,16 @@
+## Interface: 50100
+## Author: Takika
+## Title: MyBagsCache3 |cff007FFF -Ace3-|r
+## Notes: Item database for Equipment, Inventory and Bank Bags.
+## OptionalDeps: Ace3
+## SavedVariables: MyBagsCacheDB
+## LoadOnDemand: 0
+
+# Libraries
+Embeds.xml
+
+#Locales
+Locals\Locals.xml
+
+MyBagsCache.xml
+MyBagsCache.lua

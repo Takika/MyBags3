@@ -1,0 +1,34 @@
+-- Version : English - Ramble 
+
+MYBANK_NAME = "MyBank"
+MYBANK_DESCRIPTION = "All in one bank mod"
+
+MYBANKFRAME_TITLE = "Bank"
+
+-- SLASHCOMMANDS
+-- MYBANK_COMMANDS    = {"/mybank", "/mb"}
+--[[ MYBANK_CMD_OPTIONS = {
+	MYBAGS_CMD_OPT_REPLACE,			-- done
+	MYBAGS_CMD_OPT_FREEZE,			-- done
+	MYBAGS_CMD_OPT_LOCK,				-- done
+	MYBAGS_CMD_OPT_COLUMNS,			-- done
+	MYBAGS_CMD_OPT_BAG,					-- done
+	MYBAGS_CMD_OPT_HIGHLIGHT,		-- done
+	MYBAGS_CMD_OPT_NOESC,				-- done
+	MYBAGS_CMD_OPT_TITLE,				-- done
+	MYBAGS_CMD_OPT_CASH,				-- done
+	MYBAGS_CMD_OPT_BUTTONS,			-- done
+	MYBAGS_CMD_OPT_AIOI,				-- done
+	MYBAGS_CMD_OPT_REVERSE,			-- done
+	MYBAGS_CMD_OPT_BORDER,			-- done
+	MYBAGS_CMD_OPT_PLAYERSEL,		-- done
+	MYBAGS_CMD_OPT_COUNT,				-- done
+	MYBAGS_CMD_OPT_SCALE,				-- done
+	MYBAGS_CMD_OPT_STRATA,			-- done
+	MYBAGS_CMD_OPT_ANCHOR,			-- done
+	MYBAGS_CMD_OPT_TOGGLE,			-- done
+	MYBAGS_CMD_RESET,						-- done
+	MYBAGS_CMD_OPT_GRAPHICS,		-- skip
+	MYBAGS_CMD_OPT_SLOTCOLOR,		-- skip
+}
+]]
