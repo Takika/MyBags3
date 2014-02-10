@@ -50,20 +50,38 @@ local function ColorConvertHexToDigit(h)
 end
 
 local function GetItemInfoFromLink(l)
-	if (not l) then return end
-	local _, _, c, id ,il, n=strfind(l, "|cff(%x+)|Hitem:(%-?%d+)([^|]+)|h%[(.-)%]|h|r")
+	if (not l) then
+	    return
+	end
+	local _, _, c, id ,il, n = strfind(l, "|cff(%x+)|Hitem:(%-?%d+)([^|]+)|h%[(.-)%]|h|r")
 	return n, c, id .. il, id
 end
 
 local function IsSpecialtyBag(itype, isubtype)
-	if (strlower(itype or "") == strlower(L["ACEG_TEXT_AMMO"])) then return 1 end
-	if (strlower(itype or "") == strlower(L["ACEG_TEXT_QUIVER"])) then return 2 end
-	if (strlower(isubtype or "") == strlower(L["ACEG_TEXT_SOUL"])) then return 3 end
-	if (strlower(isubtype or "") == strlower(L["ACEG_TEXT_ENCHANT"])) then return 4 end
-	if (strlower(isubtype or "") == strlower(L["ACEG_TEXT_ENGINEER"])) then return 5 end
-	if (strlower(isubtype or "") == strlower(L["ACEG_TEXT_HERB"])) then return 6 end
-	if (strlower(isubtype or "") == strlower(L["ACEG_TEXT_GEM"])) then return 7 end
-	if (strlower(isubtype or "") == strlower(L["ACEG_TEXT_MINING"])) then return 8 end
+	if (strlower(itype or "") == strlower(L["ACEG_TEXT_AMMO"])) then
+	    return 1
+	end
+	if (strlower(itype or "") == strlower(L["ACEG_TEXT_QUIVER"])) then
+	    return 2
+	end
+	if (strlower(isubtype or "") == strlower(L["ACEG_TEXT_SOUL"])) then
+	    return 3
+	end
+	if (strlower(isubtype or "") == strlower(L["ACEG_TEXT_ENCHANT"])) then
+	    return 4
+	end
+	if (strlower(isubtype or "") == strlower(L["ACEG_TEXT_ENGINEER"])) then
+	    return 5
+    end
+	if (strlower(isubtype or "") == strlower(L["ACEG_TEXT_HERB"])) then
+	    return 6
+	end
+	if (strlower(isubtype or "") == strlower(L["ACEG_TEXT_GEM"])) then
+	    return 7
+	end
+	if (strlower(isubtype or "") == strlower(L["ACEG_TEXT_MINING"])) then
+	    return 8
+	end
 end
 
 local function IsSpecialtyBagFromLink(b)
