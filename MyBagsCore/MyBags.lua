@@ -1,5 +1,5 @@
 local MBC = "MyBagsCore-1.0"
-local MBC_MINOR = tonumber(("$Rev$"):match("(%d+)"))
+local MBC_MINOR = "2014021001"
 if not LibStub then error(MBC .. " requires LibStub.") end
 local MyBagsCore = LibStub:NewLibrary(MBC, MBC_MINOR)
 if not MyBagsCore then return end
