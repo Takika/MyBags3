@@ -9,9 +9,22 @@ local tonumber, pairs = tonumber, pairs
 
 local function GetItemInfoFromLink(l)
 	if (not l) then
-		return
+	    return
 	end
-	local c, id, il, n = select(3, strfind(l, "|cff(%x+)|Hitem:(%-?%d+)([^|]+)|h%[(.-)%]|h|r"))
+
+	local c, t, id, il, n = select(3, strfind(l, "|cff(%x+)|H(%l+):(%-?%d+)([^|]+)|h%[(.-)%]|h|r"))
+
+    --[[
+    return n, c, id .. il, id, t
+
+	if (strfind(l, "Hitem")) then
+	    c, id ,il, n = select(3, strfind(l, "|cff(%x+)|Hitem:(%-?%d+)([^|]+)|h%[(.-)%]|h|r"))
+    else
+    	if (strfind(l, "Hbattlepet")) then
+    	    c, id ,il, n = select(3, strfind(l, "|cff(%x+)|Hbattlepet:(%-?%d+)([^|]+)|h%[(.-)%]|h|r"))
+    	end
+	end
+	]]
 	return n, c, id .. il, id
 end
 

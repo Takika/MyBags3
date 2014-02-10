@@ -1,5 +1,5 @@
 local MBC = "MyBagsCore-1.0"
-local MBC_MINOR = "2014021001"
+local MBC_MINOR = "2014.02.10.1"
 if not LibStub then error(MBC .. " requires LibStub.") end
 local MyBagsCore = LibStub:NewLibrary(MBC, MBC_MINOR)
 if not MyBagsCore then return end
@@ -32,12 +32,21 @@ local	ACEG_MAP_ONOFF = {[0]="|cffff5050Off|r",[1]="|cff00ff00On|r"}
 local L = LibStub("AceLocale-3.0"):GetLocale("MyBags")
 
 local pcall, error, pairs = pcall, error, pairs
+local strfind = string.find
 
 local mb_options = {
 	type = "group",
 	args = {
 	},
 }
+
+local function tostr(str)
+	return tostring(str or "")
+end
+
+local function tonum(val)
+	return tonumber(val or 0)
+end
 
 local function ColorConvertHexToDigit(h)
 	if (strlen(h) ~= 6) then
@@ -53,9 +62,41 @@ local function GetItemInfoFromLink(l)
 	if (not l) then
 	    return
 	end
-	local _, _, c, id ,il, n = strfind(l, "|cff(%x+)|Hitem:(%-?%d+)([^|]+)|h%[(.-)%]|h|r")
+	local c, t, id, il, n = select(3, strfind(l, "|cff(%x+)|H(%l+):(%-?%d+)([^|]+)|h%[(.-)%]|h|r"))
+    return n, c, id .. il, id, t
+
+    --[[
+    print("c: " .. c .. ", t: " .. t .. ", id: " .. id .. ", il: " .. il .. ", n: " .. n)
+
+	if (strfind(l, "Hitem")) then
+	    c, id ,il, n = select(3, strfind(l, "|cff(%x+)|Hitem:(%-?%d+)([^|]+)|h%[(.-)%]|h|r"))
+	    t = "item"
+    else
+    	if (strfind(l, "Hbattlepet")) then
+    	    c, id ,il, n = select(3, strfind(l, "|cff(%x+)|Hbattlepet:(%-?%d+)([^|]+)|h%[(.-)%]|h|r"))
+    	    t = "battlepet"
+    	end
+	end
 	return n, c, id .. il, id
+	]]
 end
+
+
+local function GetBattlePetInfoFromLink(l)
+    if (not l) then
+        return
+    end
+
+    local c, id, lvl, num, hp, pw, sp, u, n
+    if (strfind(l, "Hbattlepet")) then
+        -- "|cff0070dd|Hbattlepet:1178:1:3:152:13:10:0x0000000000000000|h[Sunreaver Micro-Sentry]|h|r"
+        c, id, lvl, rar, hp, pw, sp, u, n = select(3, strfind(l, "|cff(%x+)|Hbattlepet:(%-?%d+):(%d+):(%d+):(%d+):(%d+):(%d+):([^|]+)|h%[(.-)%]|h|r"))
+    end
+
+    return tonum(id), tonum(lvl), tonum(rar), tonum(hp), tonum(pw), tonum(sp), n
+end
+
+
 
 local function IsSpecialtyBag(itype, isubtype)
 	if (strlower(itype or "") == strlower(L["ACEG_TEXT_AMMO"])) then
@@ -95,14 +136,6 @@ local function IsSpecialtyBagFromID(i)
 	if (not i) then return end
 	local c, d = select(6, GetItemInfo(i))
 	return IsSpecialtyBag(c, d)
-end
-
-local function tostr(str)
-	return tostring(str or "")
-end
-
-local function tonum(val)
-	return tonumber(val or 0)
 end
 
 local function ParseWords(str, pat)
@@ -489,7 +522,7 @@ function MyBagsCore:GetInfo(bag, slot)
 	if infofunc then
 		return infofunc(self, bag, slot)
 	end
-	return nil, 0, nil, nil, nil, nil, nil
+	return nil, 0, nil, nil, nil, nil, nil, nil
 end
 
 function MyBagsCore:GetInfoLive(bag, slot)
@@ -500,12 +533,12 @@ function MyBagsCore:GetInfoLive(bag, slot)
 		-- it's an item
 		local texture, count, locked, _ , readable = GetContainerItemInfo(bag, slot)
 		local itemLink = GetContainerItemLink(bag, slot)
-		local name, quality, _, ID
+		local name, quality, _, ID, i_type
 		if itemLink then
-			name, quality, _, ID = GetItemInfoFromLink(itemLink)
+			name, quality, _, ID, i_type = GetItemInfoFromLink(itemLink)
 		end
 		count = tonum(count)
-		return texture, count, ID, locked, quality, readable, name or nil
+		return texture, count, ID, locked, quality, readable, name or nil, i_type
 	else
 		-- it's a bag
 		local count = GetContainerNumSlots(bag)
@@ -528,7 +561,7 @@ function MyBagsCore:GetInfoLive(bag, slot)
 			count = 16
 		end
 		count = tonum(count)
-		return texture, count, ID, locked, quality, readable, name or nil
+		return texture, count, ID, locked, quality, readable, name or nil, "bag"
 	end
 end
 
@@ -565,39 +598,39 @@ function MyBagsCore:GetInfoDataStore(bag, slot)
 			return texture, count, ID, nil, quality, readable, name
 		else
 			local ID, slotLink, count = DS:GetSlotInfo(container, slot)
-			local name, itemLink, texture, quality
+			local name, itemLink, texture, quality, i_type
 			if ID then
 				name, itemLink = GetItemInfo(ID)
 				texture = GetItemIcon(ID)
 				if itemLink then
-					quality = select(3, strfind(itemLink, "|cff(%x+)|.*|h|r"))
+					quality, i_type = select(3, strfind(itemLink, "|cff(%x+)|H(%l+):.*|h|r"))
 				end
 			end
 			if slotLink then
 				ID = slotLink
 			end
-			return texture, count, ID, nil, quality, readable, name
+			return texture, count, ID, nil, quality, readable, name, i_type
 		end
 	end
 end
 
 function MyBagsCore:GetInfoMyBagsCache(bag,slot)
 	local charID = self:GetCurrentPlayer()
-	local texture, count, ID, locked, quality, readable, name
+	local texture, count, ID, locked, quality, readable, name, i_type
 	if self.isEquipment then
-		texture, count, ID, quality, name = MyBagsCache:GetInfo("equipment", bag, charID)
+		texture, count, ID, quality, name, i_type = MyBagsCache:GetInfo("equipment", bag, charID)
 	else
-		texture, count, ID, quality, name = MyBagsCache:GetInfo(bag, slot, charID)
+		texture, count, ID, quality, name, i_type = MyBagsCache:GetInfo(bag, slot, charID)
 		if not slot and ID then
 			readable = IsSpecialtyBagFromID(ID)
 		end
 	end
 	count = tonum(count)
-	return texture, count, ID, nil, quality, readable, name
+	return texture, count, ID, nil, quality, readable, name, i_type
 end
 
 function MyBagsCore:GetInfoNone(bag, slot)
-	return nil, 0, nil, nil, nil, nil, nil
+	return nil, 0, nil, nil, nil, nil, nil, nil
 end
 
 function MyBagsCore:GetSlotCount()
@@ -697,11 +730,23 @@ function MyBagsCore:ItemButton_OnEnter(widget)
 		if widget:GetParent() == MyBankFrameBank then
 			GameTooltip:SetInventoryItem("player", BankButtonIDToInvSlotID(widget:GetID()))
 		else
-			ContainerFrameItemButton_OnEnter(widget)
+		    local hasCooldown, repairCost, speciesID, level, breedQuality, maxHealth, power, speed, name = GameTooltip:SetBagItem(widget:GetParent():GetID(), widget:GetID())
+		    if (speciesID and speciesID > 0) then
+    		    local link = GetContainerItemLink(widget:GetParent():GetID(), widget:GetID())
+    		    local id, lvl, rar, hp, pw, sp, n = GetBattlePetInfoFromLink(link)
+    		    BattlePetToolTip_Show(id, lvl, rar, hp, pw, sp, n)
+		    else
+		        if (BattlePetTooltip) then
+		            BattlePetTooltip:Hide()
+		        end
+    			ContainerFrameItemButton_OnEnter(widget)
+		    end
 		end
 	else
+	    -- print("self.isLive = false");
 		local ID = select(3, self:GetInfo(widget:GetParent():GetID(), widget:GetID() - 1000))
-		if ID then
+		local i_type = select(8, self:GetInfo(widget:GetParent():GetID(), widget:GetID() - 1000))
+		if ID and i_type ~= "battlepet" then
 			local hyperlink = self:GetHyperlink(ID)
 			if hyperlink then GameTooltip:SetHyperlink(hyperlink) end
 		end
