@@ -1,5 +1,5 @@
 local MBC = "MyBagsCore-1.0"
-local MBC_MINOR = "2014.02.10.1"
+local MBC_MINOR = "2014.02.11.3"
 if not LibStub then error(MBC .. " requires LibStub.") end
 local MyBagsCore = LibStub:NewLibrary(MBC, MBC_MINOR)
 if not MyBagsCore then return end
@@ -1239,6 +1239,8 @@ function MyBagsCore:LayoutBagFrame(bagFrame)
 				self.curCol = 0
 				self.curRow = self.curRow + 1
 			end
+			local newItemTexture = _G[itemBase .. slot .. "NewItemTexture"]
+			newItemTexture:Hide()
 			itemButton:Show()
 			itemButton:ClearAllPoints()
 			itemButton:SetPoint("TOPLEFT", self.frame:GetName(), "TOPLEFT", self:GetXY(self.curRow, self.curCol))
