@@ -31,8 +31,11 @@ local	ACEG_MAP_ONOFF = {[0]="|cffff5050Off|r",[1]="|cff00ff00On|r"}
 
 local L = LibStub("AceLocale-3.0"):GetLocale("MyBags")
 
-local pcall, error, pairs = pcall, error, pairs
-local strfind = string.find
+local pcall, error, pairs, unpack = pcall, error, pairs, unpack
+local strfind, strlen, strsub, strlower, strgmatch, strupper = string.find, string.len, string.sub, string.lower, string.gmatch, string.upper
+local strtrim = strtrim
+local tinsert, tremove = table.insert, table.remove
+local tostring, tonumber, select = tostring, tonumber, select
 
 local mb_options = {
 	type = "group",
@@ -52,7 +55,15 @@ local function ColorConvertHexToDigit(h)
 	if (strlen(h) ~= 6) then
 		return 0, 0, 0
 	end
-	local r = {a=10, b=11, c=12, d=13, e=14, f=15}
+
+	local r = {
+	    a = 10,
+	    b = 11,
+	    c = 12,
+	    d = 13,
+	    e = 14,
+	    f = 15
+	}
 	return ((tonumber(strsub(h,1,1)) or r[strsub(h,1,1)] or 0) * 16 + (tonumber(strsub(h,2,2)) or r[strsub(h,2,2)] or 0))/255, 
 		((tonumber(strsub(h,3,3)) or r[strsub(h,3,3)] or 0) * 16 + (tonumber(strsub(h,4,4)) or r[strsub(h,4,4)] or 0))/255,
 		((tonumber(strsub(h,5,5)) or r[strsub(h,5,5)] or 0) * 16 + (tonumber(strsub(h,6,6)) or r[strsub(h,6,6)] or 0))/255
@@ -62,25 +73,10 @@ local function GetItemInfoFromLink(l)
 	if (not l) then
 	    return
 	end
+
 	local c, t, id, il, n = select(3, strfind(l, "|cff(%x+)|H(%l+):(%-?%d+)([^|]+)|h%[(.-)%]|h|r"))
     return n, c, id .. il, id, t
-
-    --[[
-    print("c: " .. c .. ", t: " .. t .. ", id: " .. id .. ", il: " .. il .. ", n: " .. n)
-
-	if (strfind(l, "Hitem")) then
-	    c, id ,il, n = select(3, strfind(l, "|cff(%x+)|Hitem:(%-?%d+)([^|]+)|h%[(.-)%]|h|r"))
-	    t = "item"
-    else
-    	if (strfind(l, "Hbattlepet")) then
-    	    c, id ,il, n = select(3, strfind(l, "|cff(%x+)|Hbattlepet:(%-?%d+)([^|]+)|h%[(.-)%]|h|r"))
-    	    t = "battlepet"
-    	end
-	end
-	return n, c, id .. il, id
-	]]
 end
-
 
 local function GetBattlePetInfoFromLink(l)
     if (not l) then
@@ -96,30 +92,35 @@ local function GetBattlePetInfoFromLink(l)
     return tonum(id), tonum(lvl), tonum(rar), tonum(hp), tonum(pw), tonum(sp), n
 end
 
-
-
 local function IsSpecialtyBag(itype, isubtype)
 	if (strlower(itype or "") == strlower(L["ACEG_TEXT_AMMO"])) then
 	    return 1
 	end
+
 	if (strlower(itype or "") == strlower(L["ACEG_TEXT_QUIVER"])) then
 	    return 2
 	end
+
 	if (strlower(isubtype or "") == strlower(L["ACEG_TEXT_SOUL"])) then
 	    return 3
 	end
+
 	if (strlower(isubtype or "") == strlower(L["ACEG_TEXT_ENCHANT"])) then
 	    return 4
 	end
+
 	if (strlower(isubtype or "") == strlower(L["ACEG_TEXT_ENGINEER"])) then
 	    return 5
     end
+
 	if (strlower(isubtype or "") == strlower(L["ACEG_TEXT_HERB"])) then
 	    return 6
 	end
+
 	if (strlower(isubtype or "") == strlower(L["ACEG_TEXT_GEM"])) then
 	    return 7
 	end
+
 	if (strlower(isubtype or "") == strlower(L["ACEG_TEXT_MINING"])) then
 	    return 8
 	end
@@ -127,24 +128,35 @@ end
 
 local function IsSpecialtyBagFromLink(b)
 	local i = select(4, GetItemInfoFromLink(b))
-	if (not i) then return end
+	if (not i) then
+	    return
+	end
+
 	local c, d = select(6, GetItemInfo(i))
 	return IsSpecialtyBag(c, d)
 end
 
 local function IsSpecialtyBagFromID(i)
-	if (not i) then return end
+	if (not i) then
+	    return
+	end
+
 	local c, d = select(6, GetItemInfo(i))
 	return IsSpecialtyBag(c, d)
 end
 
 local function ParseWords(str, pat)
-	if (tostr(str) == "") then return {} end
+	if (tostr(str) == "") then
+	    return {}
+	end
+
 	local list = {}
 	local word
-	for word in string.gmatch(str, pat or "%S+") do
+
+	for word in strgmatch(str, pat or "%S+") do
 		tinsert(list, word)
 	end
+
 	return list
 end
 
@@ -153,6 +165,7 @@ function MyBagsCore:OnEmbedInitialize(addon)
 		local prof = addon.db:GetCurrentProfile()
 		return addon.db.profiles[prof][var] or false
 	end
+
 	addon.IsSet = function(var)
 		local prof = addon.db:GetCurrentProfile()
 		local t = type(addon.db.profiles[prof][var])
@@ -163,47 +176,59 @@ function MyBagsCore:OnEmbedInitialize(addon)
 				return false
 			end
 		end
+
 		if t == "boolean" then
 			return addon.db.profiles[prof][var]
 		else
 			return true
 		end
 	end
+
 	addon.SetOpt = function(var,val)
 		local prof = addon.db:GetCurrentProfile()
 		addon.db.profiles[prof][var] = val;
 	end
+
 	addon.TogOpt = function(var)
 		local prof = addon.db:GetCurrentProfile()
 		if not addon.db.profiles[prof][var] then
 			addon.db.profiles[prof][var] = true
 			return true
 		end
+
 		local v_ret = addon.db.profiles[prof][var]
 		local t = type(v_ret)
 		if t == "boolean" then
 			v_ret = not v_ret
 		end
+
 		if t == "number" then
 			v_ret = 1 - v_ret
 		end
+
 		addon.db.profiles[prof][var] = v_ret
 		return v_ret
 	end
+
 	addon.Result = function(text, val, map)
 		if val == true then
 			val = 1
 		end
-		if( map ) then val = map[val or 0] or val end
+		if (map) then
+		    val = map[val or 0] or val
+		end
 		AC:Printf(format(L["ACE_CMD_RESULT"], addon.name, text .. " " .. L["ACEG_TEXT_NOW_SET_TO"] .. " " .. format(L["ACEG_DISPLAY_OPTION"], val or L["ACE_CMD_REPORT_NO_VAL"]))) 
 	end
+
 	addon.TogMsg = function(var,text)
 		addon.Result(text, addon.TogOpt(var), ACEG_MAP_ONOFF)
 	end
+
 	addon.Error  = function(...)
 		local arg = {...}
 		AC:Printf(format(unpack(arg)))
 	end
+
 	addon.frame = _G[addon.frameName]
 	addon.frame.self = addon
 	local inOptions = false
@@ -213,10 +238,12 @@ function MyBagsCore:OnEmbedInitialize(addon)
 			inOptions = true
 		end
 	end
+
 	if not inOptions then
 		LibStub("AceConfig-3.0"):RegisterOptionsTable("MyBags", mb_options)
 		LibStub("AceConfigDialog-3.0"):AddToBlizOptions("MyBags", "MyBags")
 	end
+
 	LibStub("AceConfig-3.0"):RegisterOptionsTable(addon.name, addon.options)
 	LibStub("AceConfigDialog-3.0"):AddToBlizOptions(addon.name, addon.name, "MyBags")
 
@@ -233,19 +260,22 @@ function MyBagsCore:OnEmbedEnable(addon)
 	if addon.GetOpt("Scale") then
 		addon.frame:SetScale(addon.GetOpt("Scale"))
 	end
+
 	addon:SetUISpecialFrames()
 	addon:SetFrozen()
 	addon:SetLockTexture()
 	local point = addon.GetOpt("Anchor")
 	if point then
 		addon.frame:ClearAllPoints()
-		addon.frame:SetPoint(string.upper(point), addon.frame:GetParent():GetName(), string.upper(point), 0, 0)
+		addon.frame:SetPoint(strupper(point), addon.frame:GetParent():GetName(), strupper(point), 0, 0)
 	end
+
 	if addon:CanSaveItems() then
 		addon:LoadDropDown()
 	else
 		addon.SetOpt("Player")
 	end
+
 	addon:ChkCompanion()
 	if addon.GetOpt("Strata") then
 		addon.frame:SetFrameStrata(addon.GetOpt("Strata"))
@@ -257,6 +287,7 @@ function MyBagsCore:RegisterEvents(obj)
 	if (obj) then
 		self = obj
 	end
+
 	self:RegisterEvent("BAG_UPDATE");
 	self:RegisterEvent("BAG_UPDATE_COOLDOWN", "LayoutFrameOnEvent")
 --	self:RegisterEvent("UNIT_INVENTORY_CHANGED", "UNIT_INVENTORY_CHANGED");
@@ -267,6 +298,7 @@ function MyBagsCore:HookFunctions(obj)
 	if (obj) then
 		self = obj
 	end
+
 	self:RawHook("ToggleBag", true)
 	self:RawHook("OpenBag", true)
 	self:RawHook("CloseBag", true)
@@ -299,13 +331,13 @@ end
 function MyBagsCore:SetUISpecialFrames()
 	local k, v
 	if self.GetOpt("NoEsc") then
-		for k,v in pairs( UISpecialFrames ) do
+		for k, v in pairs(UISpecialFrames) do
 			if v == (self.frameName) then
-				table.remove(UISpecialFrames, k)
+				tremove(UISpecialFrames, k)
 			end
 		end
 	else
-		table.insert(UISpecialFrames, self.frameName)
+		tinsert(UISpecialFrames, self.frameName)
 	end
 end
 
@@ -322,7 +354,9 @@ end
 function MyBagsCore:SetLockTexture()
 	local button = _G[self.frameName .. "ButtonsLockButtonNormalTexture"]
 	local texture = "Interface\\AddOns\\MyBags\\Skin\\LockButton-"
-	if not self.GetOpt("Lock") then texture = texture .. "Un" end
+	if not self.GetOpt("Lock") then
+	    texture = texture .. "Un"
+	end
 	texture = texture .. "Locked-Up"
 	button:SetTexture(texture)
 	if self.GetOpt("Lock") and self.GetOpt("Graphics") == "none" then
@@ -347,9 +381,14 @@ end
 function MyBagsCore:IsLive()
 	local isLive = true
 	local charID = self:GetCurrentPlayer()
-	if charID ~= strtrim(UnitName("player")) .. L["CHARACTER_DELIMITOR"] .. strtrim(GetRealmName()) then isLive = false end
---	if charID ~= ace.char.id then isLive = false end
-	if self.isBank and not MyBank.atBank then isLive = false end
+	if charID ~= strtrim(UnitName("player")) .. L["CHARACTER_DELIMITOR"] .. strtrim(GetRealmName()) then
+	    isLive = false
+	end
+
+	if self.isBank and not MyBank.atBank then
+	    isLive = false
+	end
+
 	self.isLive = isLive
 	return isLive
 end
@@ -358,13 +397,17 @@ function MyBagsCore:GetCurrentPlayer()
 	if self and self.Player then 
 		return self.Player
 	end
+
 	local charName = strtrim(UnitName("player"));
 	local realmName = strtrim(GetRealmName());
 	return charName .. L["CHARACTER_DELIMITOR"] .. realmName
 end
 
 function MyBagsCore:TooltipSetOwner(owner, anchor)
-	if not owner then owner = UIParent end
+	if not owner then
+	    owner = UIParent
+	end
+
 	local parent = owner:GetParent()
 	if parent and (parent == self.frame or parent:GetParent() == self.frame ) then
 		local point = self.GetOpt("Anchor") or "bottomright"
@@ -376,28 +419,33 @@ function MyBagsCore:TooltipSetOwner(owner, anchor)
 	else
 		anchor = "ANCHOR_PRESERVE"
 	end
+
 	GameTooltip:SetOwner(owner, anchor)
 end
 
 function MyBagsCore:Open()
-	if not self.frame:IsVisible() then self.frame:Show() end
+	if not self.frame:IsVisible() then
+	    self.frame:Show()
+	end
+
 	local charName = strtrim(UnitName("player"));
 	local realmName = strtrim(GetRealmName());
---	self.atBank = false
 	self.Player = charName .. L["CHARACTER_DELIMITOR"] .. realmName
 
 	if self.Player then
---		self.Player = ace.char.id
 		local dropDown = _G[self.frameName .. "CharSelectDropDown"]
 		if dropDown then
 		   UIDropDownMenu_SetSelectedValue(dropDown, self.Player)
 		end
 	end
+
 	self:LayoutFrame()
 end
 
 function MyBagsCore:Close()
-	if self.frame:IsVisible() then self.frame:Hide() end
+	if self.frame:IsVisible() then
+	    self.frame:Hide()
+	end
 end
 
 function MyBagsCore:Toggle()
@@ -415,6 +463,7 @@ function MyBagsCore:GetHyperlink(ID)
 	else
 		link = select(2, GetItemInfo("item:" .. ID))
 	end
+
 	return link
 end
 
@@ -426,15 +475,27 @@ function MyBagsCore:GetTextLink(ID)
 end
 
 function MyBagsCore:BagIDToInvSlotID(bag, isBank)
-	if bag == -1 or bag >= 5 and bag <= 11 then isBank = 1 end
-	if bag < 1 or bag > 11 then return nil; end
-	if isBank then return BankButtonIDToInvSlotID(bag, 1)	end
+	if bag < 1 or bag > 11 then
+	    return nil
+	end
+
+	if bag == -1 or bag >= 5 and bag <= 11 then
+	    isBank = 1
+	end
+
+	if isBank then
+	    return BankButtonIDToInvSlotID(bag, 1)
+	end
+
 	return ContainerIDToInventoryID(bag)
 end
 
 function MyBagsCore:IncludeBag(bag)
-	if self.isBank and bag == BANK_CONTAINER then return true end
-	if bag < self.firstBag or bag > (self.firstBag + self.totalBags-1) then
+	if self.isBank and bag == BANK_CONTAINER then
+	    return true
+	end
+
+	if bag < self.firstBag or bag > (self.firstBag + self.totalBags - 1) then
 		return false
 	else
 		local prof = self.db:GetCurrentProfile()
@@ -447,9 +508,15 @@ function MyBagsCore:IncludeBag(bag)
 end
 
 function MyBagsCore:IsBagSlotUsable(bag)
-	if not self.isBank then return true end
+	if not self.isBank then
+	    return true
+	end
+
 	local slots, _ = GetNumBankSlots()
-	if (bag+1 - self.firstBag) <= slots  then return true end
+	if (bag + 1 - self.firstBag) <= slots then
+	    return true
+	end
+
 	return false
 end
 
@@ -476,24 +543,26 @@ function MyBagsCore:SplitString(s, p, n)
 	if (type(p) ~= "string") then
 		p = L["CHARACTER_DELIMITOR"]
 	end
+
 	local l, sp, ep = {}, 0
 	while (sp) do
-		sp, ep=strfind(s, p)
+		sp, ep = strfind(s, p)
 		if (sp) then
-			tinsert(l, strsub(s, 1, sp-1))
-			s = strsub(s, ep+1)
+			tinsert(l, strsub(s, 1, sp - 1))
+			s = strsub(s, ep + 1)
 		else
 			tinsert(l, s)
 			break
 		end
 		if (n) then
-			n=n-1
+			n = n - 1
 		end
-		if (n and (n==0)) then 
+		if (n and (n == 0)) then 
 			tinsert(l, s)
 			break
 		end
 	end
+
 	return unpack(l)
 end
 
@@ -522,6 +591,7 @@ function MyBagsCore:GetInfo(bag, slot)
 	if infofunc then
 		return infofunc(self, bag, slot)
 	end
+
 	return nil, 0, nil, nil, nil, nil, nil, nil
 end
 
@@ -537,6 +607,7 @@ function MyBagsCore:GetInfoLive(bag, slot)
 		if itemLink then
 			name, quality, _, ID, i_type = GetItemInfoFromLink(itemLink)
 		end
+
 		count = tonum(count)
 		return texture, count, ID, locked, quality, readable, name or nil, i_type
 	else
@@ -553,13 +624,14 @@ function MyBagsCore:GetInfoLive(bag, slot)
 			end
 			locked = IsInventoryItemLocked(inventoryID)
 			readable = IsSpecialtyBagFromLink(itemLink)
-		elseif ( bag == -1 ) then
+		elseif (bag == -1) then
 			texture = "Interface\\Buttons\\Button-Backpack-Up"
 			count = 28;
-		elseif ( bag == 0 ) then				
+		elseif (bag == 0) then				
 			texture = "Interface\\Buttons\\Button-Backpack-Up"
 			count = 16
 		end
+
 		count = tonum(count)
 		return texture, count, ID, locked, quality, readable, name or nil, "bag"
 	end
@@ -625,6 +697,7 @@ function MyBagsCore:GetInfoMyBagsCache(bag,slot)
 			readable = IsSpecialtyBagFromID(ID)
 		end
 	end
+
 	count = tonum(count)
 	return texture, count, ID, nil, quality, readable, name, i_type
 end
@@ -643,10 +716,13 @@ function MyBagsCore:GetSlotCount()
 			displaySlots = 28
 		end
 		for i = 1, slots do
-			if (self:GetInfo(BANK_CONTAINER, i)) then used = used + 1 end
+			if (self:GetInfo(BANK_CONTAINER, i)) then
+			    used = used + 1
+			end
 		end
 	end
-	for bagIndex = 0, self.totalBags -1 do
+
+	for bagIndex = 0, self.totalBags - 1 do
 		local bagFrame = _G[self.frameName .. "Bag" .. bagIndex]
 		if bagFrame and self:IncludeBag(bagFrame:GetID()) then
 			local bagID = bagFrame:GetID()
@@ -656,13 +732,16 @@ function MyBagsCore:GetSlotCount()
 				slots = slots + bagSlots
 				displaySlots = displaySlots + bagSlots
 				for i = 1, bagSlots do
-					if self:GetInfo(bagID, i) then used = used + 1 end
+					if self:GetInfo(bagID, i) then
+					    used = used + 1
+					end
 				end
 			else
 				displaySlots = displaySlots + bagSlots
 			end
 		end
 	end
+
 	return slots, used, displaySlots
 end
 
@@ -676,13 +755,18 @@ end
 function MyBagsCore:ItemButton_OnLeave(widget)
 	GameTooltip:Hide()
 	local bagButton = _G[widget:GetParent():GetName() .. "Bag"]
-	if bagButton then bagButton:UnlockHighlight() end
+	if bagButton then
+	    bagButton:UnlockHighlight()
+	end
 	CursorUpdate(widget)
 end
 
 function MyBagsCore:ItemButton_OnClick(widget, button)
 	if self.isLive then
-		if widget.hasItem then self.watchLock = 1 end
+		if widget.hasItem then
+		    self.watchLock = 1
+		end
+
 		if self.isBank and widget:GetParent():GetID() == BANK_CONTAINER then
 			BankFrameItemButtonGeneric_OnClick(widget, button)
 		else
@@ -701,19 +785,23 @@ function MyBagsCore:ItemButton_OnModifiedClick(widget, button)
 --			StackSplitFrame:SetFrameStrata("TOOLTIP");
 --		end
 	else
-		if ( button == "LeftButton" ) then
-			if ( IsControlKeyDown() ) then
-				local ID = select(3, self:GetInfo( widget:GetParent():GetID(), widget:GetID() - 1000 ))
+		if (button == "LeftButton") then
+			if (IsControlKeyDown()) then
+				local ID = select(3, self:GetInfo(widget:GetParent():GetID(), widget:GetID() - 1000))
 				if DressUpItemLink and ID and ID ~= "" then
-					DressUpItemLink("item:"..ID)
+					DressUpItemLink("item:" .. ID)
 				end
-			elseif ( IsShiftKeyDown() ) then
-				local ID = select(3, self:GetInfo( widget:GetParent():GetID(), widget:GetID() - 1000 ))
+			elseif (IsShiftKeyDown()) then
+				local ID = select(3, self:GetInfo(widget:GetParent():GetID(), widget:GetID() - 1000))
 				local hyperLink
-				if ID then hyperLink = self:GetHyperlink(ID) end
+				if ID then
+				    hyperLink = self:GetHyperlink(ID)
+				end
+
 				if hyperLink then 
 					ChatEdit_InsertLink(hyperLink)
 				end
+
 				StackSplitFrame:Hide();
 			end
 		end
@@ -723,8 +811,11 @@ end
 function MyBagsCore:ItemButton_OnEnter(widget)
 	if self.GetOpt("HlBags") then
 		local bagButton = _G[widget:GetParent():GetName() .. "Bag"]
-		if bagButton then bagButton:LockHighlight() end
+		if bagButton then
+		    bagButton:LockHighlight()
+		end
 	end
+
 	self:TooltipSetOwner(widget)
 	if self.isLive then
 		if widget:GetParent() == MyBankFrameBank then
@@ -743,7 +834,6 @@ function MyBagsCore:ItemButton_OnEnter(widget)
 		    end
 		end
 	else
-	    -- print("self.isLive = false");
 		local ID = select(3, self:GetInfo(widget:GetParent():GetID(), widget:GetID() - 1000))
 		local i_type = select(8, self:GetInfo(widget:GetParent():GetID(), widget:GetID() - 1000))
 		if ID and i_type ~= "battlepet" then
@@ -751,7 +841,8 @@ function MyBagsCore:ItemButton_OnEnter(widget)
 			if hyperlink then GameTooltip:SetHyperlink(hyperlink) end
 		end
 	end
-	if ( widget.readable or (IsControlKeyDown() and widget.hasItem) ) then
+
+	if (widget.readable or (IsControlKeyDown() and widget.hasItem)) then
 		ShowInspectCursor()
 	end
 end
@@ -783,7 +874,7 @@ function MyBagsCore:BagButton_OnEnter(widget)
 		if bagFrame:GetID() == 0 then
 			GameTooltip:SetText(BACKPACK_TOOLTIP, 1.0,1.0,1.0)
 		elseif ID then
-			hyperlink = self:GetHyperlink(ID)
+			local hyperlink = self:GetHyperlink(ID)
 			if hyperlink then
 				GameTooltip:SetHyperlink(hyperlink)
 			end
@@ -791,6 +882,7 @@ function MyBagsCore:BagButton_OnEnter(widget)
 			setTooltip = false
 		end
 	end
+
 	if not setTooltip then
 		local keyBinding
 		if self.isBank then
@@ -807,12 +899,14 @@ function MyBagsCore:BagButton_OnEnter(widget)
 					end
 					GameTooltip:Show()
 				end
-				keyBinding = GetBindingKey("TOGGLEBAG"..(4-widget:GetID()))
+
+				keyBinding = GetBindingKey("TOGGLEBAG" .. (4 - widget:GetID()))
 			else
 				GameTooltip:SetText(BANK_BAG)
 			end
 		else
-			if bagFrame:GetID() == 0 then -- SetScript("OnEnter", MainMenuBarBackpackButton:GetScript("OnEnter"))
+			if bagFrame:GetID() == 0 then
+			    -- SetScript("OnEnter", MainMenuBarBackpackButton:GetScript("OnEnter"))
 				GameTooltip:SetText(BACKPACK_TOOLTIP, 1.0,1.0,1.0)
 				keyBinding = GetBindingKey("TOGGLEBACKPACK")
 			else
@@ -820,7 +914,9 @@ function MyBagsCore:BagButton_OnEnter(widget)
 			end
 		end
 	end
-	if self.GetOpt("HlItems") then -- Highlight
+
+	if self.GetOpt("HlItems") then
+	    -- Highlight
 		local i
 		for i = 1, self.GetOpt("MAXBAGSLOTS") do
 			local button = _G[bagFrame:GetName() .. "Item" .. i]
@@ -837,7 +933,9 @@ function MyBagsCore:BagButton_OnLeave(widget)
 	local i
 	for i = 1, self.GetOpt("MAXBAGSLOTS") do
 		local button = _G[widget:GetParent():GetName() .. "Item" .. i]
-		if button then	button:UnlockHighlight() end
+		if button then
+		    button:UnlockHighlight()
+		end
 	end
 end
 
@@ -847,16 +945,21 @@ function MyBagsCore:BagButton_OnClick(widget, button, ignoreShift)
 	else
 		widget:SetChecked(self:IncludeBag(widget:GetID()))
 	end
+
 	if self.isLive then
 		if button == "LeftButton" then
 			if not self:IsBagSlotUsable(widget:GetParent():GetID()) then
 				local cost = GetBankSlotCost()
 				if GetMoney() > cost then
-					if not StaticPopupDialogs["PURCHASE_BANKBAG"] then	return end
+					if not StaticPopupDialogs["PURCHASE_BANKBAG"] then
+					    return
+					end
 					StaticPopup_Show("PURCHASE_BANKBAG")
 				end
+
 				return
 			end
+
 			if (not IsShiftKeyDown()) then
 				self:BagButton_OnReceiveDrag(widget)
 			else
@@ -1073,6 +1176,7 @@ function MyBagsCore:UpdateTitle()
 		title1 = 5
 		title2 = 9
 	end
+
 	local columns = self.GetOpt("Columns")
 	local titleString
 	if columns > title2 then
@@ -1082,9 +1186,10 @@ function MyBagsCore:UpdateTitle()
 	else
 		titleString = L["MYBAGS_TITLE0"]
 	end
-	titleString = titleString .. _G[string.upper(self.frameName) .. "_TITLE"]
+
+	titleString = titleString .. _G[strupper(self.frameName) .. "_TITLE"]
 	local title = _G[self.frameName .. "Name"]
-  local player, realm = self:SplitString(MyBagsCore:GetCurrentPlayer(self), L["CHARACTER_DELIMITOR"])
+	local player, realm = self:SplitString(self:GetCurrentPlayer(), L["CHARACTER_DELIMITOR"])
 	title:SetText(format(titleString, player, realm))
 end
 
@@ -1092,21 +1197,21 @@ function MyBagsCore:SetFrameMode(mode)
 	local frame = self.frame
 	local frameName = self.frameName
 
-	local frameTitle					= _G[frameName .. "Name"]
-	local frameButtonBar			= _G[frameName .. "Buttons"]
+	local frameTitle = _G[frameName .. "Name"]
+	local frameButtonBar = _G[frameName .. "Buttons"]
 
-	local textureTopLeft			= _G[frameName .. "TextureTopLeft"]
-	local textureTopCenter		= _G[frameName .. "TextureTopCenter"]
-	local textureTopRight			= _G[frameName .. "TextureTopRight"]
+	local textureTopLeft = _G[frameName .. "TextureTopLeft"]
+	local textureTopCenter = _G[frameName .. "TextureTopCenter"]
+	local textureTopRight = _G[frameName .. "TextureTopRight"]
 
-	local textureLeft					= _G[frameName .. "TextureLeft"]
-	local textureCenter				= _G[frameName .. "TextureCenter"]
-	local textureRight				= _G[frameName .. "TextureRight"]
+	local textureLeft = _G[frameName .. "TextureLeft"]
+	local textureCenter = _G[frameName .. "TextureCenter"]
+	local textureRight = _G[frameName .. "TextureRight"]
 
-	local textureBottomLeft		= _G[frameName .. "TextureBottomLeft"]
-	local textureBottomCenter	= _G[frameName .. "TextureBottomCenter"]
-	local textureBottomRight	= _G[frameName .. "TextureBottomRight"]
-	local texturePortrait			= _G[frameName .. "Portrait"]
+	local textureBottomLeft = _G[frameName .. "TextureBottomLeft"]
+	local textureBottomCenter = _G[frameName .. "TextureBottomCenter"]
+	local textureBottomRight = _G[frameName .. "TextureBottomRight"]
+	local texturePortrait = _G[frameName .. "Portrait"]
 
 	frameTitle:ClearAllPoints()
 	frameButtonBar:ClearAllPoints()
@@ -1116,8 +1221,8 @@ function MyBagsCore:SetFrameMode(mode)
 		frameTitle:Show()
 		frameButtonBar:Show()
 		frameButtonBar:SetPoint("TOPRIGHT", frameName, "TOPRIGHT", 10, 0)
-		frame:SetBackdropColor(0,0,0,0)
-		frame:SetBackdropBorderColor(0,0,0,0)
+		frame:SetBackdropColor(0, 0, 0, 0)
+		frame:SetBackdropBorderColor(0, 0, 0, 0)
 		textureTopLeft:Show()
 		textureTopCenter:Show()
 		textureTopRight:Show()
@@ -1142,13 +1247,13 @@ function MyBagsCore:SetFrameMode(mode)
 		textureBottomRight:Hide()
 		texturePortrait:Hide()
 		if mode == "default" then
-			local BackColor = self.GetOpt("BackColor") or {0.7,0,0,0}
+			local BackColor = self.GetOpt("BackColor") or {0.7, 0, 0, 0}
 			local a, r, g, b = unpack(BackColor)
-			frame:SetBackdropColor(r,g,b,a)
-			frame:SetBackdropBorderColor(1,1,1,a)
+			frame:SetBackdropColor(r, g, b, a)
+			frame:SetBackdropBorderColor(1, 1, 1, a)
 		else
-			frame:SetBackdropColor(0,0,0,0)
-			frame:SetBackdropBorderColor(0,0,0,0)
+			frame:SetBackdropColor(0, 0, 0, 0)
+			frame:SetBackdropBorderColor(0, 0, 0, 0)
 		end
 	end
 end
@@ -1167,8 +1272,9 @@ function MyBagsCore:LayoutBagFrame(bagFrame)
 	if searchText == SEARCH then
 		searchText = ""
 	else
-		searchText = string.lower(strtrim(searchText))
+		searchText = strlower(strtrim(searchText))
 	end
+
 	local slot
 	local itemBase = bagFrameName .. "Item"
 	local bagButton = _G[bagFrameName .. "Bag"]
@@ -1188,21 +1294,27 @@ function MyBagsCore:LayoutBagFrame(bagFrame)
 		if not texture then
 			local bag_id, texture = GetInventorySlotInfo("Bag0Slot")
 		end
+
 		if not self.isLive or (self.isLive and self:IsBagSlotUsable(bagFrame:GetID())) then
 			SetItemButtonTextureVertexColor(bagButton, 1.0, 1.0, 1.0)
 			SetItemButtonDesaturated(bagButton, locked, 0.5, 0.5, 0.5)
 		else
 			SetItemButtonTextureVertexColor(bagButton, 1.0, 0.1, 0.1)
 		end
+
 		SetItemButtonTexture(bagButton, texture)
 		if self.GetOpt("Bag") == "bar" then
 			local col, row = 0, 0
-			if self.GetOpt("Player") or self.GetOpt("Graphics") == "art" then row = 1 end
-			if self.isBank then
-				col = (self.GetOpt("Columns") - self.totalBags)/2
-			else
-				col = (self.GetOpt("Columns") - self.totalBags -.5)/2
+			if self.GetOpt("Player") or self.GetOpt("Graphics") == "art" then
+			    row = 1
 			end
+
+			if self.isBank then
+				col = (self.GetOpt("Columns") - self.totalBags) / 2
+			else
+				col = (self.GetOpt("Columns") - self.totalBags - 0.5) / 2
+			end
+
 			col = col + bagFrame:GetID() - self.firstBag
 			bagButton:Show()
 			bagButton:ClearAllPoints()
@@ -1212,9 +1324,10 @@ function MyBagsCore:LayoutBagFrame(bagFrame)
 				self.curCol  = 0
 				self.curRow = self.curRow + 1
 			end
+
 			bagButton:Show()
 			bagButton:ClearAllPoints()
-			bagButton:SetPoint("TOPLEFT", self.frameName, "TOPLEFT", self:GetXY(self.curRow,self.curCol))
+			bagButton:SetPoint("TOPLEFT", self.frameName, "TOPLEFT", self:GetXY(self.curRow, self.curCol))
 			self.curCol = self.curCol + 1
 		else
 			bagButton:Hide()
@@ -1225,20 +1338,23 @@ function MyBagsCore:LayoutBagFrame(bagFrame)
 			bagButton:SetChecked(1)
 		end
 	end
+
 	if bagFrame.size < 1 or not self:IncludeBag(bagFrame:GetID()) then
 		bagFrame.size = 0
 	else
 		for slot = 1, bagFrame.size do
 			local itemButton = _G[itemBase .. slot] or CreateFrame("Button", itemBase .. slot, bagFrame, "MyBagsItemButtonTemplate")
-			if ( self:IsLive() ) then
+			if (self:IsLive()) then
 				itemButton:SetID(slot);
 			else
 				itemButton:SetID(slot + 1000);
 			end
+
 			if self.curCol >= self.GetOpt("Columns") then
 				self.curCol = 0
 				self.curRow = self.curRow + 1
 			end
+
 			local newItemTexture = _G[itemBase .. slot .. "NewItemTexture"]
 			newItemTexture:Hide()
 			itemButton:Show()
@@ -1251,31 +1367,35 @@ function MyBagsCore:LayoutBagFrame(bagFrame)
 				itemButton.hasItem = 1
 				local fade = 1
 				if searchText ~= "" then
-					if not string.find(string.lower(name), searchText) then
+					if not strfind(strlower(name), searchText) then
 						fade = 0.2
 					end
 				end
+
 				itemButton:SetAlpha(fade)
 			else
 				quality = nil
 			end
+
 			if self.isLive then
-				local start,duration, enable = GetContainerItemCooldown(bagFrame:GetID(), slot)
+				local start, duration, enable = GetContainerItemCooldown(bagFrame:GetID(), slot)
 				local cooldown = _G[itemButton:GetName() .. "Cooldown"]
-				CooldownFrame_SetTimer(cooldown,start,duration,enable)
-				if duration>0 and enable==0 then
-					SetItemButtonTextureVertexColor(itemButton, 0.4,0.4,0.4)
+				CooldownFrame_SetTimer(cooldown, start, duration, enable)
+				if duration > 0 and enable == 0 then
+					SetItemButtonTextureVertexColor(itemButton, 0.4, 0.4, 0.4)
 				end
 			end
+
 			SetItemButtonTexture(itemButton, (texture or ""))
 			SetItemButtonCount(itemButton, count)
 			SetItemButtonDesaturated(itemButton, locked, 0.5, 0.5, 0.5)
 			if locked and locked ~= "" then
 				itemButton:LockHighlight()
-				self.watchLock =1
+				self.watchLock = 1
 			else
 				itemButton:UnlockHighlight()
 			end
+
 			if quality and self.GetOpt("Border") then
 				SetItemButtonNormalTextureVertexColor(itemButton, ColorConvertHexToDigit(quality))
 			else
@@ -1298,6 +1418,7 @@ function MyBagsCore:LayoutBagFrame(bagFrame)
 			end
 		end
 	end
+
 	if(bagFrame.size) then
 		local slot = bagFrame.size + 1
 		local itemButton = _G[itemBase .. slot]
@@ -1310,7 +1431,10 @@ function MyBagsCore:LayoutBagFrame(bagFrame)
 end
 
 function MyBagsCore:LayoutFrame()
-	if not self.frame:IsVisible() then return end
+	if not self.frame:IsVisible() then
+	    return
+	end
+
 	self.isLive = self:IsLive()
 	local bagBase = self.frameName .. "Bag"
 	local bagIndex, bagFrame, bag
@@ -1320,12 +1444,13 @@ function MyBagsCore:LayoutFrame()
 		self:LayoutEquipmentFrame(self)
 	else
 		if self.reverseOrder then
-			for bag = self.totalBags-1,0,-1  do
+			for bag = self.totalBags - 1, 0, -1  do
 				bagFrame = _G[bagBase .. bag]
 				if (bagFrame) then
 					self:LayoutBagFrame(bagFrame)
 				end
 			end
+
 			if self.isBank then
 				bagFrame = _G[self.frameName .. "Bank"]
 				self:LayoutBagFrame(bagFrame)
@@ -1335,7 +1460,8 @@ function MyBagsCore:LayoutFrame()
 				bagFrame = _G[self.frameName .. "Bank"]
 				self:LayoutBagFrame(bagFrame)
 			end
-			for bag = 0, self.totalBags-1 do
+
+			for bag = 0, self.totalBags - 1 do
 				bagFrame = _G[bagBase .. bag]
 				if (bagFrame) then
 					self:LayoutBagFrame(bagFrame)
@@ -1343,14 +1469,24 @@ function MyBagsCore:LayoutFrame()
 			end
 		end
 	end
-	if self.curCol == 0 then self.curRow = self.curRow - 1 end
+
+	if self.curCol == 0 then
+	    self.curRow = self.curRow - 1
+	end
+
 	self.frame:SetWidth(self.GetOpt("_LEFTOFFSET") + self.GetOpt("_RIGHTOFFSET") + self.GetOpt("Columns") * MYBAGS_COLWIDTH)
 	self.frame:SetHeight(self.GetOpt("_TOPOFFSET") + self.GetOpt("_BOTTOMOFFSET") + (self.curRow + 1) * MYBAGS_ROWHEIGHT)
 end
 
 function MyBagsCore:LayoutFrameOnEvent(event, unit)
-	if event == "UNIT_INVENTORY_CHANGED" and unit ~= "player" then return end
-	if event == "ITEM_LOCK_CHANGED" and not self.watchLock then return end
+	if event == "UNIT_INVENTORY_CHANGED" and unit ~= "player" then
+	    return
+	end
+
+	if event == "ITEM_LOCK_CHANGED" and not self.watchLock then
+	    return
+	end
+
 	if self.isLive then
 		self:LayoutFrame()
 	end
@@ -1382,15 +1518,17 @@ end
 function MyBagsCore:SetGraphicsDisplay(opt)
 	local a, r, g, b
 	opt, a, r, g, b = unpack(ParseWords(opt))
-	if opt ~= "default" and opt~="art" and opt~="none" then
+	if opt ~= "default" and opt ~= "art" and opt ~= "none" then
 		return
 	end
+
 	self.SetOpt("Graphics", opt)
 	if a then
 		self.SetOpt("BackColor", {tonum(a), tonum(r), tonum(g), tonum(b)})
 	else
 		self.SetOpt("BackColor")
 	end
+
 	self.Result("Background", opt)
 	self:LayoutFrame()
 end
@@ -1405,9 +1543,18 @@ end
 
 function MyBagsCore:SetFreeze(opt)
 	opt = strlower(opt)
-	if opt == "freeze always" then opt = "always" end
-	if opt == "freeze sticky" then opt = "sticky" end
-	if opt == "freeze none" then opt = "none" end
+	if opt == "freeze always" then
+	    opt = "always"
+	end
+
+	if opt == "freeze sticky" then
+	    opt = "sticky"
+	end
+
+	if opt == "freeze none" then
+	    opt = "none"
+	end
+
 	self.Result("Freeze", opt)
 	self.SetOpt("Freeze", opt)
 	self:SetFrozen()
@@ -1469,6 +1616,7 @@ function MyBagsCore:SetPlayerSel()
 	else
 		self.SetOpt("Player")
 	end
+
 	self:LayoutFrame()
 end
 
@@ -1484,7 +1632,7 @@ function MyBagsCore:SetScale(scale)
 		self.SetOpt("Scale", 0)
 		self.frame:SetScale(self.frame:GetParent():GetScale())
 		self.Result("Scale", L["ACEG_TEXT_DEFAULT"])
-	elseif (( scale < tonum(MIN_SCALE_VAL)) or (scale > tonum(MAX_SCALE_VAL))) then
+	elseif ((scale < tonum(MIN_SCALE_VAL)) or (scale > tonum(MAX_SCALE_VAL))) then
 		self.Error("Invalid Scale")
 	else
 		self.SetOpt("Scale", scale)
@@ -1495,7 +1643,7 @@ end
 
 function MyBagsCore:SetStrata(strata)
 	strata = strupper(strata)
-	if strata =="BACKGROUND" or strata =="LOW" or strata =="MEDIUM" or strata =="HIGH" or strata =="DIALOG" then
+	if strata =="BACKGROUND" or strata == "LOW" or strata == "MEDIUM" or strata == "HIGH" or strata == "DIALOG" then
 		self.SetOpt("Strata", strata)
 		self.frame:SetFrameStrata(strata)
 		self.Result("Strata", strata)
@@ -1517,7 +1665,10 @@ function MyBagsCore:ResetSettings()
 end
 
 function MyBagsCore:ResetAnchor()
-	if not self:SetAnchor(self.defaults["Anchor"]) then return end
+	if not self:SetAnchor(self.defaults["Anchor"]) then
+	    return
+	end
+
 	local anchorframe = self.frame:GetParent()
 	anchorframe:ClearAllPoints()
 	anchorframe:SetPoint(self.anchorPoint, self.anchorParent, self.anchorPoint, self.anchorOffsetX, self.anchorOffsetY)
@@ -1535,6 +1686,7 @@ function MyBagsCore:SetAnchor(point)
 		self.Error("Invalid Entry for Anchor")
 		return
 	end
+
 	local anchorframe = self.frame:GetParent()
 	local top = self.frame:GetTop()
 	local left = self.frame:GetLeft()
@@ -1543,24 +1695,27 @@ function MyBagsCore:SetAnchor(point)
 	if not top or not left or not left1 or not top1 then
 		self.Error("Frame must be open to set anchor") return
 	end
+
 	self.frame:ClearAllPoints()
 	anchorframe:ClearAllPoints()
-	anchorframe:SetPoint(string.upper(point), self.frameName, string.upper(point), 0, 0)
+	anchorframe:SetPoint(strupper(point), self.frameName, strupper(point), 0, 0)
 	top = anchorframe:GetTop()
 	left = anchorframe:GetLeft()
 	if not top or not left then
 		anchorframe:ClearAllPoints()
-		anchorframe:SetPoint("BOTTOMLEFT", "UIParent", "BOTTOMLEFT", left1, top1-10)
-		point = string.upper(self.GetOpt("Anchor") or "bottomright")
-		self.frame:SetPoint(point, anchorframe:GetName(), point, 0,0)
-		self.Error("Frame must be open to set anchor") return
+		anchorframe:SetPoint("BOTTOMLEFT", "UIParent", "BOTTOMLEFT", left1, top1 - 10)
+		point = strupper(self.GetOpt("Anchor") or "bottomright")
+		self.frame:SetPoint(point, anchorframe:GetName(), point, 0, 0)
+		self.Error("Frame must be open to set anchor")
+		return
 	end
+
 	anchorframe:ClearAllPoints()
-	anchorframe:SetPoint("BOTTOMLEFT", "UIParent", "BOTTOMLEFT", left, top-10)
-	self.frame:SetPoint(string.upper(point), anchorframe:GetName(), string.upper(point), 0, 0)
+	anchorframe:SetPoint("BOTTOMLEFT", "UIParent", "BOTTOMLEFT", left, top - 10)
+	self.frame:SetPoint(strupper(point), anchorframe:GetName(), strupper(point), 0, 0)
 	self.SetOpt("Anchor", point)
 	self.Result("Anchor", point)
-	self.anchorPoint = string.upper(point)
+	self.anchorPoint = strupper(point)
 	return TRUE
 end
 
@@ -1574,6 +1729,7 @@ function MyBagsCore:SetCompanion()
 		self:UnregisterEvent("TRADE_CLOSED")
 		self:UnregisterEvent("TRADE_SHOW")
 	end
+
 	self.TogMsg("Companion", "Companion")
 	self:ChkCompanion()
 end
@@ -1599,14 +1755,16 @@ end
 function MyBagsCore:BagSearch_OnTextChanged()
 	local search = _G[self.frameName .. "SearchBox"]
 	local text = search:GetText()
-	if ( text == SEARCH ) then
+	if (text == SEARCH) then
 		text = "";
 	end
+
 	if (text ~= "") then
 		search.clearButton:Show();
 	else
 		search.clearButton:Hide();
 	end
+
 	self:LayoutFrame()
 end
 
@@ -1616,9 +1774,10 @@ function MyBagsCore:BagSearch_OnEditFocusGained()
 	search:SetFontObject("ChatFontSmall")
 	search.searchIcon:SetVertexColor(1.0, 1.0, 1.0)
 	local text = search:GetText()
-	if ( text == SEARCH ) then
+	if (text == SEARCH) then
 		text = "";
 	end
+
 	search.clearButton:Show();
 	search:SetText(text)
 	self:LayoutFrame()
@@ -1706,9 +1865,10 @@ local mixins = {
 
 function MyBagsCore:Embed( target )
 	local k, v
-	for k, v in pairs( mixins ) do
+	for k, v in pairs(mixins) do
 		target[v] = self[v]
 	end
+
 	self.embeds[target] = true
 	return target
 end
