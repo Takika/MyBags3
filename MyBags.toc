@@ -1,9 +1,8 @@
 ## Interface: 50400
 ## Author: Ramble (modified by Isharra) (updated by thegabbert) (converted to Ace3 by Takika)
-## Version: 51
 ## Title: MyBags |cff007FFF -Ace3-|r
 ## Notes: Complete Replacement for Inventory and Bank Bags.
-## OptionalDeps: MyBagsCache, DataStore_Containers
+## OptionalDeps: MyBagsCache, DataStore, DataStore_Containers, DataStore_Characters
 ## SavedVariables: MyInventoryDB, MyBankDB, MyEquipmentDB
 
 Embeds.xml
@@ -14,4 +13,3 @@ MyBagsCore\MyBags.xml
 MyInventory\MyInventory.xml
 MyBank\MyBank.xml
 MyEquipment\MyEquipment.xml
-
