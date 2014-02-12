@@ -406,6 +406,7 @@ function MyBank:OnEnable()
 	end
 	MyBankFramePortrait:SetTexture("Interface\\Addons\\MyBags\\Skin\\MyBankPortrait")
 	StaticPopupDialogs["PURCHASE_BANKBAG"] = {
+		preferredIndex = 3;
 		text = TEXT(CONFIRM_BUY_BANK_SLOT),
 		button1 = TEXT(YES),
 		button2 = TEXT(NO),
