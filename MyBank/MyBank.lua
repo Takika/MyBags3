@@ -406,19 +406,19 @@ function MyBank:OnEnable()
 	end
 	MyBankFramePortrait:SetTexture("Interface\\Addons\\MyBags\\Skin\\MyBankPortrait")
 	StaticPopupDialogs["PURCHASE_BANKBAG"] = {
-		preferredIndex = 3;
+		preferredIndex = STATICPOPUPS_NUMDIALOGS,
 		text = TEXT(CONFIRM_BUY_BANK_SLOT),
 		button1 = TEXT(YES),
 		button2 = TEXT(NO),
-		OnAccept = function()
+		OnAccept = function(self)
 			if CT_oldPurchaseSlot then
 				CT_oldPurchaseSlot()
 			else
 				PurchaseSlot()
 			end;
 		end,
-		OnShow = function()
-			MoneyFrame_Update(this:GetName().."MoneyFrame", GetBankSlotCost());
+		OnShow = function(self)
+			MoneyFrame_Update(self:GetName() .. "MoneyFrame", GetBankSlotCost());
 		end,
 		showAlert = 1,
 		hasMoneyFrame = 1,
