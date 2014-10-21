@@ -399,7 +399,6 @@ function MyBank:OnEnable()
 	MyBankFrameBag4:SetID(9)
 	MyBankFrameBag5:SetID(10)
 	MyBankFrameBag6:SetID(11)
-
 	if self.GetOpt("Replace") then
 		BankFrame:UnregisterEvent("BANKFRAME_OPENED")
 		BankFrame:UnregisterEvent("BANKFRAME_CLOSED")
