@@ -1,5 +1,5 @@
 local MBC = "MyBagsCore-1.0"
-local MBC_MINOR = "2014.02.11.3"
+local MBC_MINOR = "2014.10.21.1"
 if not LibStub then error(MBC .. " requires LibStub.") end
 local MyBagsCore = LibStub:NewLibrary(MBC, MBC_MINOR)
 if not MyBagsCore then return end
@@ -484,7 +484,7 @@ function MyBagsCore:BagIDToInvSlotID(bag, isBank)
 	end
 
 	if isBank then
-	    return BankButtonIDToInvSlotID(bag, 1)
+	    return BankButtonIDToInvSlotID(bag - 4, 1)
 	end
 
 	return ContainerIDToInventoryID(bag)
@@ -1265,7 +1265,7 @@ function MyBagsCore:GetXY(row, col)
 end
 
 function MyBagsCore:LayoutBagFrame(bagFrame)
-	local bagFrameName = bagFrame:GetName()
+    local bagFrameName = bagFrame:GetName()
 	local bagParent = bagFrame:GetParent():GetName()
 	local searchBox = _G[bagParent .. "SearchBox"]
 	local searchText = searchBox:GetText()
@@ -1355,8 +1355,41 @@ function MyBagsCore:LayoutBagFrame(bagFrame)
 				self.curRow = self.curRow + 1
 			end
 
-			local newItemTexture = _G[itemBase .. slot .. "NewItemTexture"]
-			newItemTexture:Hide()
+			local newItemTexture = _G[itemBase .. slot].NewItemTexture
+    		local flash = _G[itemBase .. slot].flashAnim;
+		    local newItemAnim = _G[itemBase .. slot].newitemglowAnim;
+			local isNewItem = C_NewItems.IsNewItem(bagFrame:GetID(), itemButton:GetID())
+			local isBattlePayItem = IsBattlePayItem(bagFrame:GetID(), itemButton:GetID())
+
+		    local battlepayItemTexture = _G[itemBase .. slot].BattlepayItemTexture;
+		    battlepayItemTexture:Hide();
+
+			if (isNewItem) then
+			    if (isBattlePayItem) then
+                    newItemTexture:Hide();
+                    battlepayItemTexture:Show();
+			    else
+    				if (quality and NEW_ITEM_ATLAS_BY_QUALITY[quality]) then
+    					newItemTexture:SetAtlas(NEW_ITEM_ATLAS_BY_QUALITY[quality]);
+    				else
+    					newItemTexture:SetAtlas("bags-glow-white");
+    				end
+                    battlepayItemTexture:Hide();
+    				newItemTexture:Show();
+			    end
+    			if (not flash:IsPlaying() and not newItemAnim:IsPlaying()) then
+    				flash:Play();
+    				newItemAnim:Play();
+    			end
+			else
+    			battlepayItemTexture:Hide();
+    			newItemTexture:Hide();
+    			if (flash:IsPlaying() or newItemAnim:IsPlaying()) then
+    				flash:Stop();
+    				newItemAnim:Stop();
+    			end
+			end
+
 			itemButton:Show()
 			itemButton:ClearAllPoints()
 			itemButton:SetPoint("TOPLEFT", self.frame:GetName(), "TOPLEFT", self:GetXY(self.curRow, self.curCol))
@@ -1479,17 +1512,19 @@ function MyBagsCore:LayoutFrame()
 end
 
 function MyBagsCore:LayoutFrameOnEvent(event, unit)
-	if event == "UNIT_INVENTORY_CHANGED" and unit ~= "player" then
-	    return
-	end
+    if event == "UNIT_INVENTORY_CHANGED" and unit ~= "player" then
+        return
+    end
 
-	if event == "ITEM_LOCK_CHANGED" and not self.watchLock then
-	    return
-	end
+    if event == "ITEM_LOCK_CHANGED" and not self.watchLock then
+        return
+    end
 
-	if self.isLive then
-		self:LayoutFrame()
-	end
+    if event == "BAG_UPDATE_COOLDOWN" then
+        if unit == "player" and self.isLive then
+            self:LayoutFrame()
+        end
+    end
 end
 
 function MyBagsCore:LockButton_OnClick()
