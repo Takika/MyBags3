@@ -55,6 +55,7 @@ function MyInventory:OnInitialize()
 	self.anchorOffsetX = -5
 	self.anchorOffsetY = 100
 	self.isBank = false
+	self.version = MB_Core:GetCoreVersion()
 	self.db = LibStub("AceDB-3.0"):New("MyInventoryDB")
 	local prof = self.db:GetCurrentProfile()
 	if self.db.profiles[prof] and self.db.profiles[prof]["Columns"] and self.db.profiles[prof]["Columns"] > 0 then

@@ -1,5 +1,5 @@
 local MBC = "MyBagsCore-1.0"
-local MBC_MINOR = "2014.10.21.1"
+local MBC_MINOR = "2014.10.22.5"
 if not LibStub then error(MBC .. " requires LibStub.") end
 local MyBagsCore = LibStub:NewLibrary(MBC, MBC_MINOR)
 if not MyBagsCore then return end
@@ -36,6 +36,7 @@ local strfind, strlen, strsub, strlower, strgmatch, strupper = string.find, stri
 local strtrim = strtrim
 local tinsert, tremove = table.insert, table.remove
 local tostring, tonumber, select = tostring, tonumber, select
+local CreateFrame = _G.CreateFrame
 
 local mb_options = {
 	type = "group",
@@ -761,6 +762,7 @@ function MyBagsCore:ItemButton_OnLeave(widget)
 	CursorUpdate(widget)
 end
 
+--[[
 function MyBagsCore:ItemButton_OnClick(widget, button)
 	if self.isLive then
 		if widget.hasItem then
@@ -774,6 +776,7 @@ function MyBagsCore:ItemButton_OnClick(widget, button)
 		end
 	end
 end
+]]
 
 function MyBagsCore:ItemButton_OnModifiedClick(widget, button)
 	if self.isLive then
@@ -1343,7 +1346,14 @@ function MyBagsCore:LayoutBagFrame(bagFrame)
 		bagFrame.size = 0
 	else
 		for slot = 1, bagFrame.size do
-			local itemButton = _G[itemBase .. slot] or CreateFrame("Button", itemBase .. slot, bagFrame, "MyBagsItemButtonTemplate")
+		    local itemButton
+		    if (_G[itemBase .. slot]) then
+		        itemButton = _G[itemBase .. slot]
+		    else
+		        itemButton = CreateFrame("Button", itemBase .. slot, bagFrame, "MyBagsItemButtonTemplate")
+		        -- print("Button " .. itemBase .. slot .. " created");
+		    end
+			-- local itemButton = () or CreateFrame("Button", itemBase .. slot, bagFrame, "MyBagsItemButtonTemplate")
 			if (self:IsLive()) then
 				itemButton:SetID(slot);
 			else
@@ -1818,6 +1828,10 @@ function MyBagsCore:BagSearch_OnEditFocusGained()
 	self:LayoutFrame()
 end
 
+function MyBagsCore:GetCoreVersion()
+    return MBC .. " version " .. MBC_MINOR;
+end
+
 local mixins = {
 	"ToggleBag",
 	"OpenBag",
@@ -1896,6 +1910,7 @@ local mixins = {
 	"BagSearch_OnEditFocusGained",
 	"RegisterEvents",
 	"UnregisterEvents",
+	"GetCoreVersion",
 } 
 
 function MyBagsCore:Embed( target )
