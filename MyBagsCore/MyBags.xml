@@ -366,6 +366,22 @@
 			<Frame name="$parentBag4" inherits="MyBagsContainerTemplate" id="4"/>
 			<Frame name="$parentButtons" inherits="MyBagsButtonBarTemplate"/>
 			<Frame name="$parentCharSelect" inherits="MyBagsCharSelectTemplate"/>
+			<Button name="$parentSortButton">
+                <Size x="28" y="26"/>
+                <NormalTexture atlas="bags-button-autosort-up"/>
+                <PushedTexture atlas="bags-button-autosort-down"/>
+                <HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD">
+                    <Size x="24" y="23"/>
+                    <Anchors>
+                        <Anchor point="CENTER" x="0" y="0"/>
+                    </Anchors>
+                </HighlightTexture>
+                <Scripts>
+                    <OnEnter/>
+                    <OnLeave/>
+                    <OnClick/>
+                </Scripts>
+			</Button>
 			<Frame name="$parentTokenFrame">
 				<Size>
 					<AbsDimension x="183" y="32"/>

@@ -1,13 +1,18 @@
 local MBC = "MyBagsCore-1.0"
-local MBC_MINOR = "2014.10.22.5"
-if not LibStub then error(MBC .. " requires LibStub.") end
+local MBC_MINOR = "2015.01.05.3"
+if not LibStub then
+    error(MBC .. " requires LibStub.")
+end
+
 local MyBagsCore = LibStub:NewLibrary(MBC, MBC_MINOR)
-if not MyBagsCore then return end
+if not MyBagsCore then
+    return
+end
 
 MyBagsCore.embeds = MyBagsCore.embeds or {} -- table containing objects MyBagsCore is embedded in. 
 
-local AC = LibStub("AceConsole-3.0");
-assert(AC, MBC .. " requires AceConsole-3.0");
+local AC = LibStub("AceConsole-3.0")
+assert(AC, MBC .. " requires AceConsole-3.0")
 
 local MYBAGS_BOTTOMOFFSET = 20
 local MYBAGS_COLWIDTH     = 40
@@ -27,7 +32,7 @@ local MYBAGS_HERBCOLOR     = { 0.0, 0.6, 0.0 }
 local MYBAGS_GEMCOLOR      = { 0.0, 0.6, 0.6 }
 local MYBAGS_MININGCOLOR   = { 0.0, 0.0, 0.6 }
 
-local	ACEG_MAP_ONOFF = {[0]="|cffff5050Off|r",[1]="|cff00ff00On|r"}
+local ACEG_MAP_ONOFF = {[0]="|cffff5050Off|r",[1]="|cff00ff00On|r"}
 
 local L = LibStub("AceLocale-3.0"):GetLocale("MyBags")
 
@@ -39,35 +44,35 @@ local tostring, tonumber, select = tostring, tonumber, select
 local CreateFrame = _G.CreateFrame
 
 local mb_options = {
-	type = "group",
-	args = {
-	},
+    type = "group",
+    args = {
+    },
 }
 
 local function tostr(str)
-	return tostring(str or "")
+    return tostring(str or "")
 end
 
 local function tonum(val)
-	return tonumber(val or 0)
+    return tonumber(val or 0)
 end
 
 local function ColorConvertHexToDigit(h)
-	if (strlen(h) ~= 6) then
-		return 0, 0, 0
-	end
+    if (strlen(h) ~= 6) then
+        return 0, 0, 0
+    end
 
-	local r = {
-	    a = 10,
-	    b = 11,
-	    c = 12,
-	    d = 13,
-	    e = 14,
-	    f = 15
-	}
-	return ((tonumber(strsub(h,1,1)) or r[strsub(h,1,1)] or 0) * 16 + (tonumber(strsub(h,2,2)) or r[strsub(h,2,2)] or 0))/255, 
-		((tonumber(strsub(h,3,3)) or r[strsub(h,3,3)] or 0) * 16 + (tonumber(strsub(h,4,4)) or r[strsub(h,4,4)] or 0))/255,
-		((tonumber(strsub(h,5,5)) or r[strsub(h,5,5)] or 0) * 16 + (tonumber(strsub(h,6,6)) or r[strsub(h,6,6)] or 0))/255
+    local r = {
+        a = 10,
+        b = 11,
+        c = 12,
+        d = 13,
+        e = 14,
+        f = 15
+    }
+    return ((tonumber(strsub(h,1,1)) or r[strsub(h,1,1)] or 0) * 16 + (tonumber(strsub(h,2,2)) or r[strsub(h,2,2)] or 0))/255, 
+        ((tonumber(strsub(h,3,3)) or r[strsub(h,3,3)] or 0) * 16 + (tonumber(strsub(h,4,4)) or r[strsub(h,4,4)] or 0))/255,
+        ((tonumber(strsub(h,5,5)) or r[strsub(h,5,5)] or 0) * 16 + (tonumber(strsub(h,6,6)) or r[strsub(h,6,6)] or 0))/255
 end
 
 local function GetItemInfoFromLink(l)
@@ -187,7 +192,7 @@ function MyBagsCore:OnEmbedInitialize(addon)
 
 	addon.SetOpt = function(var,val)
 		local prof = addon.db:GetCurrentProfile()
-		addon.db.profiles[prof][var] = val;
+		addon.db.profiles[prof][var] = val
 	end
 
 	addon.TogOpt = function(var)
@@ -248,16 +253,16 @@ function MyBagsCore:OnEmbedInitialize(addon)
 	LibStub("AceConfig-3.0"):RegisterOptionsTable(addon.name, addon.options)
 	LibStub("AceConfigDialog-3.0"):AddToBlizOptions(addon.name, addon.name, "MyBags")
 
-	local charName = strtrim(UnitName("player"));
-	local realmName = strtrim(GetRealmName());
+	local charName = strtrim(UnitName("player"))
+	local realmName = strtrim(GetRealmName())
 --	self.atBank = false
 	addon.Player = charName .. L["CHARACTER_DELIMITOR"] .. realmName
 end
 
 -- OnEnable
 function MyBagsCore:OnEmbedEnable(addon)
-	addon:RegisterEvents();
-	addon:HookFunctions();
+	addon:RegisterEvents()
+	addon:HookFunctions()
 	if addon.GetOpt("Scale") then
 		addon.frame:SetScale(addon.GetOpt("Scale"))
 	end
@@ -289,10 +294,10 @@ function MyBagsCore:RegisterEvents(obj)
 		self = obj
 	end
 
-	self:RegisterEvent("BAG_UPDATE");
+	self:RegisterEvent("BAG_UPDATE")
 	self:RegisterEvent("BAG_UPDATE_COOLDOWN", "LayoutFrameOnEvent")
---	self:RegisterEvent("UNIT_INVENTORY_CHANGED", "UNIT_INVENTORY_CHANGED");
-	self:RegisterEvent("ITEM_LOCK_CHANGED", "LayoutFrameOnEvent");
+--    self:RegisterEvent("UNIT_INVENTORY_CHANGED", "UNIT_INVENTORY_CHANGED")
+	self:RegisterEvent("ITEM_LOCK_CHANGED", "LayoutFrameOnEvent")
 end
 
 function MyBagsCore:HookFunctions(obj)
@@ -399,8 +404,8 @@ function MyBagsCore:GetCurrentPlayer()
 		return self.Player
 	end
 
-	local charName = strtrim(UnitName("player"));
-	local realmName = strtrim(GetRealmName());
+	local charName = strtrim(UnitName("player"))
+	local realmName = strtrim(GetRealmName())
 	return charName .. L["CHARACTER_DELIMITOR"] .. realmName
 end
 
@@ -429,8 +434,8 @@ function MyBagsCore:Open()
 	    self.frame:Show()
 	end
 
-	local charName = strtrim(UnitName("player"));
-	local realmName = strtrim(GetRealmName());
+	local charName = strtrim(UnitName("player"))
+	local realmName = strtrim(GetRealmName())
 	self.Player = charName .. L["CHARACTER_DELIMITOR"] .. realmName
 
 	if self.Player then
@@ -597,8 +602,8 @@ function MyBagsCore:GetInfo(bag, slot)
 end
 
 function MyBagsCore:GetInfoLive(bag, slot)
-	local charName = strtrim(UnitName("player"));
-	local realmName = strtrim(GetRealmName());
+	local charName = strtrim(UnitName("player"))
+	local realmName = strtrim(GetRealmName())
 	self.Player = charName .. L["CHARACTER_DELIMITOR"] .. realmName
 	if slot ~= nil then
 		-- it's an item
@@ -627,7 +632,7 @@ function MyBagsCore:GetInfoLive(bag, slot)
 			readable = IsSpecialtyBagFromLink(itemLink)
 		elseif (bag == -1) then
 			texture = "Interface\\Buttons\\Button-Backpack-Up"
-			count = 28;
+			count = 28
 		elseif (bag == 0) then				
 			texture = "Interface\\Buttons\\Button-Backpack-Up"
 			count = 16
@@ -748,9 +753,9 @@ end
 
 --ITEMBUTTONS--
 function MyBagsCore:ItemButton_OnLoad(widget)
-	_G[widget:GetName().."NormalTexture"]:SetTexture("Interface\\AddOns\\MyBags\\Skin\\Button");
+	_G[widget:GetName().."NormalTexture"]:SetTexture("Interface\\AddOns\\MyBags\\Skin\\Button")
 	ContainerFrameItemButton_OnLoad(widget)
-	widget.UpdateTooltip = widget.ItemButton_OnEnter;
+	widget.UpdateTooltip = widget.ItemButton_OnEnter
 end
 
 function MyBagsCore:ItemButton_OnLeave(widget)
@@ -762,8 +767,8 @@ function MyBagsCore:ItemButton_OnLeave(widget)
 	CursorUpdate(widget)
 end
 
---[[
 function MyBagsCore:ItemButton_OnClick(widget, button)
+--[[
 	if self.isLive then
 		if widget.hasItem then
 		    self.watchLock = 1
@@ -775,17 +780,17 @@ function MyBagsCore:ItemButton_OnClick(widget, button)
 			ContainerFrameItemButton_OnClick(widget, button)
 		end
 	end
-end
 ]]
+end
 
 function MyBagsCore:ItemButton_OnModifiedClick(widget, button)
 	if self.isLive then
 --		if self.isBank and widget:GetParent():GetID() == BANK_CONTAINER then
 --			BankFrameItemButtonGeneric_OnModifiedClick(widget, button)
---			StackSplitFrame:SetFrameStrata("TOOLTIP");
+--			StackSplitFrame:SetFrameStrata("TOOLTIP")
 --		else
 --			ContainerFrameItemButton_OnModifiedClick(widget, button)
---			StackSplitFrame:SetFrameStrata("TOOLTIP");
+--			StackSplitFrame:SetFrameStrata("TOOLTIP")
 --		end
 	else
 		if (button == "LeftButton") then
@@ -805,7 +810,7 @@ function MyBagsCore:ItemButton_OnModifiedClick(widget, button)
 					ChatEdit_InsertLink(hyperLink)
 				end
 
-				StackSplitFrame:Hide();
+				StackSplitFrame:Hide()
 			end
 		end
 	end
@@ -865,16 +870,27 @@ end
 --BAGBUTTONS--
 function MyBagsCore:BagButton_OnEnter(widget)
 	local bagFrame = widget:GetParent()
+	local bagID = bagFrame:GetID()
 	local setTooltip = true
 	self:TooltipSetOwner(widget)
 	if self.isLive then
-		local invSlot = self:BagIDToInvSlotID(bagFrame:GetID())
+        if (bagID == 0) then
+        	GameTooltip:SetText(BACKPACK_TOOLTIP, 1.0, 1.0, 1.0)
+        else
+            -- 
+        end
+
+		local invSlot = self:BagIDToInvSlotID(bagID)
 		if not invSlot or (not GameTooltip:SetInventoryItem("player", invSlot)) then
 			setTooltip = false
 		end
+
+		if (bagID == 0 or not IsInventoryItemProfessionBag("player", ContainerIDToInventoryID(bagID))) then
+			GameTooltip:AddLine(CLICK_BAG_SETTINGS)
+		end
 	else
-		local ID = select(3, self:GetInfo(widget:GetParent():GetID()))
-		if bagFrame:GetID() == 0 then
+		local ID = select(3, self:GetInfo(bagID))
+		if bagID == 0 then
 			GameTooltip:SetText(BACKPACK_TOOLTIP, 1.0,1.0,1.0)
 		elseif ID then
 			local hyperlink = self:GetHyperlink(ID)
@@ -887,9 +903,8 @@ function MyBagsCore:BagButton_OnEnter(widget)
 	end
 
 	if not setTooltip then
-		local keyBinding
 		if self.isBank then
-			if self.isLive and not self:IsBagSlotUsable(bagFrame:GetID()) then
+			if self.isLive and not self:IsBagSlotUsable(bagID) then
 				GameTooltip:SetText(BANK_BAG_PURCHASE)
 				if MyBank.atBank then
 					local cost = GetBankSlotCost()
@@ -902,18 +917,15 @@ function MyBagsCore:BagButton_OnEnter(widget)
 					end
 					GameTooltip:Show()
 				end
-
-				keyBinding = GetBindingKey("TOGGLEBAG" .. (4 - widget:GetID()))
 			else
 				GameTooltip:SetText(BANK_BAG)
 			end
 		else
-			if bagFrame:GetID() == 0 then
-			    -- SetScript("OnEnter", MainMenuBarBackpackButton:GetScript("OnEnter"))
-				GameTooltip:SetText(BACKPACK_TOOLTIP, 1.0,1.0,1.0)
-				keyBinding = GetBindingKey("TOGGLEBACKPACK")
-			else
+			if bagID ~= 0 then
 				GameTooltip:SetText(EQUIP_CONTAINER)
+			else
+			    -- SetScript("OnEnter", MainMenuBarBackpackButton:GetScript("OnEnter"))
+				-- GameTooltip:SetText(BACKPACK_TOOLTIP, 1.0,1.0,1.0)
 			end
 		end
 	end
@@ -928,10 +940,12 @@ function MyBagsCore:BagButton_OnEnter(widget)
 			end
 		end
 	end
+
+    GameTooltip:Show()
 end
 
 function MyBagsCore:BagButton_OnLeave(widget)
-	SetMoneyFrameColor("GameTooltipMoneyFrame", 1.0, 1.0, 1.0);
+	SetMoneyFrameColor("GameTooltipMoneyFrame", 1.0, 1.0, 1.0)
 	GameTooltip:Hide()
 	local i
 	for i = 1, self.GetOpt("MAXBAGSLOTS") do
@@ -1023,6 +1037,7 @@ function MyBagsCore:LayoutOptions()
 	local cash = _G[self.frameName .. "MoneyFrame"]
 	local slots = _G[self.frameName .. "Slots"]
 	local buttons = _G[self.frameName .. "Buttons"]
+	local sortButton = _G[self.frameName .. "SortButton"]
 
 	local search = _G[self.frameName .. "SearchBox"]
 	if search then
@@ -1054,31 +1069,31 @@ function MyBagsCore:LayoutOptions()
 		cash:Hide()
 	end
 
+    local token = _G[self.frameName .. "TokenFrame"]
 	if self.GetOpt("Token") and ManageBackpackTokenFrame then
-		local token = _G[self.frameName .. "TokenFrame"]
 		if (BackpackTokenFrame_IsShown()) then
 			token:SetParent(self.frameName)
 			token:SetPoint("RIGHT", cash, "LEFT", -10, 0)
 			local i
 			for i=1, MAX_WATCHED_TOKENS do
-				local name, count, icon, currencyID = GetBackpackCurrencyInfo(i);
+				local name, count, icon, currencyID = GetBackpackCurrencyInfo(i)
 				-- Update watched tokens
-				local watchButton = _G[self.frameName .. "TokenFrameToken"..i];
+				local watchButton = _G[self.frameName .. "TokenFrameToken"..i]
 				if ( name ) then
-					watchButton.icon:SetTexture(icon);
+					watchButton.icon:SetTexture(icon)
 					if ( count <= 99999 ) then
-						watchButton.count:SetText(count);
+						watchButton.count:SetText(count)
 					else
-						watchButton.count:SetText("*");
+						watchButton.count:SetText("*")
 					end
-					watchButton.currencyID = currencyID;
-					watchButton:Show();
-					BackpackTokenFrame.shouldShow = 1;
-					BackpackTokenFrame.numWatchedTokens = i;
+					watchButton.currencyID = currencyID
+					watchButton:Show()
+					BackpackTokenFrame.shouldShow = 1
+					BackpackTokenFrame.numWatchedTokens = i
 				else
-					watchButton:Hide();
+					watchButton:Hide()
 					if ( i == 1 ) then
-						BackpackTokenFrame.shouldShow = nil;
+						BackpackTokenFrame.shouldShow = nil
 					end
 				end
 			end
@@ -1087,6 +1102,7 @@ function MyBagsCore:LayoutOptions()
 			token:Hide()
 		end
 	else
+	    token:Hide()
 	end
 
 	if self.GetOpt("Buttons") then
@@ -1170,6 +1186,28 @@ function MyBagsCore:LayoutOptions()
 	else
 		self.aioiOrder = false
 	end
+
+    if self.isLive and self.GetOpt("BagSort") then
+        -- sortButton:ClearAllPoints()
+        sortButton:SetPoint("TOPRIGHT", search, "TOPLEFT", -20, 1)
+        sortButton:SetScript("OnEnter", nil)
+        sortButton:SetScript("OnLeave", nil)
+        sortButton:SetScript("OnClick", function()
+            self:SortBags();
+        end)
+        --[[
+        if search:IsShown() then
+            sortButton:SetPoint("TOPRIGHT", search, "TOPLEFT", -8, 0)
+        elseif playerSelectFrame:IsShown() then
+            sortButton:SetPoint("TOPRIGHT", playerSelectFrame, "TOPLEFT", -8, 0)
+        else
+            sortButton:SetPoint("TOPRIGHT", self.frameName, "TOPRIGHT", -8, -32)
+        end
+        ]]
+        sortButton:Show()
+    else
+        sortButton:Hide()
+    end
 end
 
 function MyBagsCore:UpdateTitle()
@@ -1351,13 +1389,12 @@ function MyBagsCore:LayoutBagFrame(bagFrame)
 		        itemButton = _G[itemBase .. slot]
 		    else
 		        itemButton = CreateFrame("Button", itemBase .. slot, bagFrame, "MyBagsItemButtonTemplate")
-		        -- print("Button " .. itemBase .. slot .. " created");
 		    end
-			-- local itemButton = () or CreateFrame("Button", itemBase .. slot, bagFrame, "MyBagsItemButtonTemplate")
+
 			if (self:IsLive()) then
-				itemButton:SetID(slot);
+				itemButton:SetID(slot)
 			else
-				itemButton:SetID(slot + 1000);
+				itemButton:SetID(slot + 1000)
 			end
 
 			if self.curCol >= self.GetOpt("Columns") then
@@ -1366,37 +1403,37 @@ function MyBagsCore:LayoutBagFrame(bagFrame)
 			end
 
 			local newItemTexture = _G[itemBase .. slot].NewItemTexture
-    		local flash = _G[itemBase .. slot].flashAnim;
-		    local newItemAnim = _G[itemBase .. slot].newitemglowAnim;
+    		local flash = _G[itemBase .. slot].flashAnim
+		    local newItemAnim = _G[itemBase .. slot].newitemglowAnim
 			local isNewItem = C_NewItems.IsNewItem(bagFrame:GetID(), itemButton:GetID())
 			local isBattlePayItem = IsBattlePayItem(bagFrame:GetID(), itemButton:GetID())
 
-		    local battlepayItemTexture = _G[itemBase .. slot].BattlepayItemTexture;
-		    battlepayItemTexture:Hide();
+		    local battlepayItemTexture = _G[itemBase .. slot].BattlepayItemTexture
+		    battlepayItemTexture:Hide()
 
 			if (isNewItem) then
 			    if (isBattlePayItem) then
-                    newItemTexture:Hide();
-                    battlepayItemTexture:Show();
+                    newItemTexture:Hide()
+                    battlepayItemTexture:Show()
 			    else
     				if (quality and NEW_ITEM_ATLAS_BY_QUALITY[quality]) then
-    					newItemTexture:SetAtlas(NEW_ITEM_ATLAS_BY_QUALITY[quality]);
+    					newItemTexture:SetAtlas(NEW_ITEM_ATLAS_BY_QUALITY[quality])
     				else
-    					newItemTexture:SetAtlas("bags-glow-white");
+    					newItemTexture:SetAtlas("bags-glow-white")
     				end
-                    battlepayItemTexture:Hide();
-    				newItemTexture:Show();
+                    battlepayItemTexture:Hide()
+    				newItemTexture:Show()
 			    end
     			if (not flash:IsPlaying() and not newItemAnim:IsPlaying()) then
-    				flash:Play();
-    				newItemAnim:Play();
+    				flash:Play()
+    				newItemAnim:Play()
     			end
 			else
-    			battlepayItemTexture:Hide();
-    			newItemTexture:Hide();
+    			battlepayItemTexture:Hide()
+    			newItemTexture:Hide()
     			if (flash:IsPlaying() or newItemAnim:IsPlaying()) then
-    				flash:Stop();
-    				newItemAnim:Stop();
+    				flash:Stop()
+    				newItemAnim:Stop()
     			end
 			end
 
@@ -1535,6 +1572,12 @@ function MyBagsCore:LayoutFrameOnEvent(event, unit)
             self:LayoutFrame()
         end
     end
+end
+
+function MyBagsCore:SortBags()
+    PlaySound("UI_BagSorting_01")
+    SortBags()
+    self:LayoutFrame()
 end
 
 function MyBagsCore:LockButton_OnClick()
@@ -1697,6 +1740,11 @@ function MyBagsCore:SetStrata(strata)
 	end
 end
 
+function MyBagsCore:SetBagSort()
+    self.TogMsg("BagSort", "Bag sorting")
+    self:LayoutFrame()
+end
+
 function MyBagsCore:ResetSettings()
 	self.db:ResetProfile()
 	local prof = self.db:GetCurrentProfile()
@@ -1801,13 +1849,13 @@ function MyBagsCore:BagSearch_OnTextChanged()
 	local search = _G[self.frameName .. "SearchBox"]
 	local text = search:GetText()
 	if (text == SEARCH) then
-		text = "";
+		text = ""
 	end
 
 	if (text ~= "") then
-		search.clearButton:Show();
+		search.clearButton:Show()
 	else
-		search.clearButton:Hide();
+		search.clearButton:Hide()
 	end
 
 	self:LayoutFrame()
@@ -1820,16 +1868,16 @@ function MyBagsCore:BagSearch_OnEditFocusGained()
 	search.searchIcon:SetVertexColor(1.0, 1.0, 1.0)
 	local text = search:GetText()
 	if (text == SEARCH) then
-		text = "";
+		text = ""
 	end
 
-	search.clearButton:Show();
+	search.clearButton:Show()
 	search:SetText(text)
 	self:LayoutFrame()
 end
 
 function MyBagsCore:GetCoreVersion()
-    return MBC .. " version " .. MBC_MINOR;
+    return MBC .. " version " .. MBC_MINOR
 end
 
 local mixins = {
@@ -1879,6 +1927,7 @@ local mixins = {
 	"LayoutBagFrame",
 	"LayoutFrame",
 	"LayoutFrameOnEvent",
+	"SortBags",
 	"LockButton_OnClick",
 	"SetColumns",
 	"SetReplace",
@@ -1900,6 +1949,7 @@ local mixins = {
 	"SetCount",
 	"SetScale",
 	"SetStrata",
+	"SetBagSort",
 	"ResetSettings",
 	"ResetAnchor",
 	"SetAnchor",

@@ -2,12 +2,13 @@ local MYINVENTORY_DEFAULT_OPTIONS = {
 	["Columns"]       = 12,
 	["Replace"]       = true,
 	["Bag"]           = "bar",
+	["BagSort"]       = true,
 	["Graphics"]      = "art",
 	["Count"]         = "free",
 	["HlItems"]       = true,
-	["Sort"]					= "realm",
-	["Search"]				= true,
-	["Token"]					= true,
+	["Sort"]          = "realm",
+	["Search"]        = true,
+	["Token"]         = true,
 	["HlBags"]        = true,
 	["Freeze"]        = "sticky",
 	["NoEsc"]         = false,
@@ -136,6 +137,17 @@ function MyInventory:OnInitialize()
 				set = function(info, val)
 					MyInventory:SetBagDisplay(val)
 				end
+			},
+			bagsort = {
+			    type = "toggle",
+			    name = "BagSort",
+			    desc = "Toggle bag sort button",
+			    get = function(info)
+			        return MyInventory.IsSet("BagSort")
+			    end,
+			    set = function(info, val)
+			        MyInventory:SetBagSort()
+			    end,
 			},
 			back = {
 				type = "select",
