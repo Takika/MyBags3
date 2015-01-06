@@ -1,11 +1,11 @@
 <Bindings>
-	<Binding name="MYINVENTORY" header="MYBAGSHEADER">
+	<Binding name="MYINVENTORY" header="MYBAGSHEADER" category="ADDONS">
 		if MyInventory then MyInventory:Toggle() end
 	</Binding>
-	<Binding name="MYBANK">
+	<Binding name="MYBANK" header="MYBAGSHEADER" category="ADDONS">
 		if MyBank then MyBank:Toggle() end
 	</Binding>
-	<Binding name="MYEQUIPMENT">
+	<Binding name="MYEQUIPMENT" header="MYBAGSHEADER" category="ADDONS">
 		if MyEquipment then MyEquipment:Toggle() end
 	</Binding>
 </Bindings>
