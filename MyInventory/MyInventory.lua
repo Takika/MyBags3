@@ -446,7 +446,7 @@ function MyInventory:LoadDropDown()
 	_G["this"] = dropDownButton
 	UIDropDownMenu_Initialize(dropDown, self.UserDropDown_Initialize)
 	UIDropDownMenu_SetSelectedValue(dropDown, self:GetCurrentPlayer())
---	UIDropDownMenu_SetSelectedValue(dropDown, self.Player)
+--    UIDropDownMenu_SetSelectedValue(dropDown, self.Player)
 	UIDropDownMenu_SetWidth(dropDown, 140)
 	_G["this"] = last_this
 end

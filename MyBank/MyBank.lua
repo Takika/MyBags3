@@ -2,10 +2,11 @@ local MYBANK_DEFAULT_OPTIONS = {
 	["Columns"]       = 14,
 	["Replace"]       = true,
 	["Bag"]           = "bar",
+	["BagSort"]       = true,
 	["Graphics"]      = "art",
 	["Count"]         = "free",
 	["HlItems"]       = true,
-	["Sort"]					= "realm",
+	["Sort"]          = "realm",
 	["Search"]				= true,
 	["HlBags"]        = true,
 	["Freeze"]        = "sticky",
@@ -135,6 +136,17 @@ function MyBank:OnInitialize()
 				set = function(info, val)
 					MyBank:SetBagDisplay(val)
 				end,
+			},
+			bagsort = {
+			    type = "toggle",
+			    name = "BagSort",
+			    desc = "Toggle bag sort button",
+			    get = function(info)
+			        return MyBank.IsSet("BagSort")
+			    end,
+			    set = function(info, val)
+			        MyBank:SetBagSort()
+			    end,
 			},
 			back = {
 				type = "select",
@@ -389,7 +401,7 @@ function MyBank:OnInitialize()
 end
 
 function MyBank:OnEnable()
---	MyBagsCore:Enable(self);
+--    MyBagsCore:Enable(self);
 	MyBankFrameBank.maxIndex = 28
 	MyBankFrameBank:SetID(BANK_CONTAINER)
 	MyBankFrameBag0:SetID(5)
@@ -403,8 +415,10 @@ function MyBank:OnEnable()
 	if self.GetOpt("Replace") then
 		BankFrame:UnregisterEvent("BANKFRAME_OPENED")
 		BankFrame:UnregisterEvent("BANKFRAME_CLOSED")
-		_G["BankFrame"] = self.frame
 	end
+
+    self:RegisterEvent("BANKFRAME_OPENED")
+
 	MyBankFramePortrait:SetTexture("Interface\\Addons\\MyBags\\Skin\\MyBankPortrait")
 	StaticPopupDialogs["PURCHASE_BANKBAG"] = {
 		preferredIndex = STATICPOPUPS_NUMDIALOGS,
@@ -490,10 +504,14 @@ end
 
 function MyBank:RegisterEvents()
 	MB_Core:RegisterEvents(self)
-	self:RegisterEvent("BANKFRAME_OPENED")
-	self:RegisterEvent("BANKFRAME_CLOSED")
 	self:RegisterEvent("PLAYERBANKSLOTS_CHANGED",   "LayoutFrameOnEvent")
 	self:RegisterEvent("PLAYERBANKBAGSLOTS_CHANGED","LayoutFrameOnEvent")
+    self:RegisterEvent("BANKFRAME_CLOSED")
+end
+
+function MyBank:UnregisterEvents()
+    MB_Core:UnregisterEvents(self)
+    self:RegisterEvent("BANKFRAME_OPENED")
 end
 
 function MyBank:HookFunctions()
@@ -549,6 +567,7 @@ function MyBank:BAG_UPDATE(event, bag)
 end
 
 function MyBank:BANKFRAME_OPENED()
+    self:RegisterEvents()
 	MyBank.atBank = true
 	SetPortraitTexture(MyBankFramePortrait, "npc")
 	if self.Freeze == "always" or (self.Freeze == "sticky" and self.frame:IsVisible()) then
@@ -574,6 +593,7 @@ function MyBank:BANKFRAME_CLOSED()
 		self.holdOpen = false
 		if self.isLive then self:LayoutFrame() end
 	end
+    self:UnregisterEvents()
 end
 
 function MyBank:GetInfoFunc()
@@ -702,4 +722,9 @@ function MyBank:SetReplace()
 		BankFrame:RegisterEvent("BANKFRAME_OPENED")
 		BankFrame:RegisterEvent("BANKFRAME_CLOSED")
 	end
+end
+
+function MyBank:SortBags()
+  PlaySound("UI_BagSorting_01")
+  SortBankBags()
 end

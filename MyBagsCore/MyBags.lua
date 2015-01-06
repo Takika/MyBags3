@@ -1,5 +1,5 @@
 local MBC = "MyBagsCore-1.0"
-local MBC_MINOR = "2015.01.05.3"
+local MBC_MINOR = "2015.01.06.7"
 if not LibStub then
     error(MBC .. " requires LibStub.")
 end
@@ -17,8 +17,6 @@ assert(AC, MBC .. " requires AceConsole-3.0")
 local MYBAGS_BOTTOMOFFSET = 20
 local MYBAGS_COLWIDTH     = 40
 local MYBAGS_ROWHEIGHT    = 40
-
-local MYBAGS_MAXBAGSLOTS  = 28
 
 local MIN_SCALE_VAL 	= "0.2"
 local MAX_SCALE_VAL 	= "2.0"
@@ -255,13 +253,12 @@ function MyBagsCore:OnEmbedInitialize(addon)
 
 	local charName = strtrim(UnitName("player"))
 	local realmName = strtrim(GetRealmName())
---	self.atBank = false
+--    self.atBank = false
 	addon.Player = charName .. L["CHARACTER_DELIMITOR"] .. realmName
 end
 
 -- OnEnable
 function MyBagsCore:OnEmbedEnable(addon)
-	addon:RegisterEvents()
 	addon:HookFunctions()
 	if addon.GetOpt("Scale") then
 		addon.frame:SetScale(addon.GetOpt("Scale"))
@@ -298,6 +295,14 @@ function MyBagsCore:RegisterEvents(obj)
 	self:RegisterEvent("BAG_UPDATE_COOLDOWN", "LayoutFrameOnEvent")
 --    self:RegisterEvent("UNIT_INVENTORY_CHANGED", "UNIT_INVENTORY_CHANGED")
 	self:RegisterEvent("ITEM_LOCK_CHANGED", "LayoutFrameOnEvent")
+end
+
+function MyBagsCore:UnregisterEvents(obj)
+    if (obj) then
+        self = obj
+    end
+
+    self:UnregisterAllEvents()
 end
 
 function MyBagsCore:HookFunctions(obj)
@@ -430,6 +435,7 @@ function MyBagsCore:TooltipSetOwner(owner, anchor)
 end
 
 function MyBagsCore:Open()
+    self:RegisterEvents()
 	if not self.frame:IsVisible() then
 	    self.frame:Show()
 	end
@@ -452,6 +458,8 @@ function MyBagsCore:Close()
 	if self.frame:IsVisible() then
 	    self.frame:Hide()
 	end
+
+    self:UnregisterEvents()
 end
 
 function MyBagsCore:Toggle()
@@ -768,7 +776,6 @@ function MyBagsCore:ItemButton_OnLeave(widget)
 end
 
 function MyBagsCore:ItemButton_OnClick(widget, button)
---[[
 	if self.isLive then
 		if widget.hasItem then
 		    self.watchLock = 1
@@ -780,7 +787,6 @@ function MyBagsCore:ItemButton_OnClick(widget, button)
 			ContainerFrameItemButton_OnClick(widget, button)
 		end
 	end
-]]
 end
 
 function MyBagsCore:ItemButton_OnModifiedClick(widget, button)
@@ -1568,7 +1574,7 @@ function MyBagsCore:LayoutFrameOnEvent(event, unit)
     end
 
     if event == "BAG_UPDATE_COOLDOWN" then
-        if unit == "player" and self.isLive then
+        if self.isLive then
             self:LayoutFrame()
         end
     end
@@ -1577,7 +1583,6 @@ end
 function MyBagsCore:SortBags()
     PlaySound("UI_BagSorting_01")
     SortBags()
-    self:LayoutFrame()
 end
 
 function MyBagsCore:LockButton_OnClick()
@@ -1771,14 +1776,10 @@ function MyBagsCore:ResetAnchor()
 end
 
 function MyBagsCore:SetAnchor(point)
-	if     point == "topleft" then
-	elseif point == "topright" then
-	elseif point == "bottomleft" then
-	elseif point == "bottomright" then
-	else 
+    if not (point == "topleft" or point == "topright" or point == "bottomleft" or point == "bottomright") then
 		self.Error("Invalid Entry for Anchor")
 		return
-	end
+    end
 
 	local anchorframe = self.frame:GetParent()
 	local top = self.frame:GetTop()
@@ -1786,7 +1787,8 @@ function MyBagsCore:SetAnchor(point)
 	local top1 = anchorframe:GetTop()
 	local left1 = anchorframe:GetLeft()
 	if not top or not left or not left1 or not top1 then
-		self.Error("Frame must be open to set anchor") return
+		self.Error("Frame must be open to set anchor")
+		return
 	end
 
 	self.frame:ClearAllPoints()

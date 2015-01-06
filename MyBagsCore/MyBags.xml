@@ -2,7 +2,7 @@
 	 xsi:schemaLocation="http://www.blizzard.com/wow/ui/FrameXML/UI.xsd">
 	<Script file="MyBags.lua"/>
 	<!-- Templates -->
-	<Button name="MyBagsItemButtonTemplate" inherits="ContainerFrameItemButtonTemplate" virtual="true">
+	<Button name="MyBagsItemButtonTemplate" inherits="ContainerFrameItemButtonTemplate" virtual="true" hidden="true">
 		<Frames>
 			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
 		</Frames>
