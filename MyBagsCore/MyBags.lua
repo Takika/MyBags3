@@ -1234,7 +1234,7 @@ function MyBagsCore:UpdateTitle()
 		titleString = L["MYBAGS_TITLE0"]
 	end
 
-	titleString = titleString .. _G[strupper(self.frameName) .. "_TITLE"]
+	titleString = titleString .. L[strupper(self.frameName) .. "_TITLE"]
 	local title = _G[self.frameName .. "Name"]
 	local player, realm = self:SplitString(self:GetCurrentPlayer(), L["CHARACTER_DELIMITOR"])
 	title:SetText(format(titleString, player, realm))
