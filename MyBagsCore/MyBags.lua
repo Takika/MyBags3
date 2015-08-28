@@ -1,5 +1,5 @@
 local MBC = "MyBagsCore-1.0"
-local MBC_MINOR = "2015.01.06.7"
+local MBC_MINOR = "2015.08.28.1"
 if not LibStub then
     error(MBC .. " requires LibStub.")
 end
@@ -253,7 +253,6 @@ function MyBagsCore:OnEmbedInitialize(addon)
 
 	local charName = strtrim(UnitName("player"))
 	local realmName = strtrim(GetRealmName())
---    self.atBank = false
 	addon.Player = charName .. L["CHARACTER_DELIMITOR"] .. realmName
 end
 
