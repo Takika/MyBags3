@@ -1,5 +1,5 @@
 local MBC = "MyBagsCore-1.0"
-local MBC_MINOR = "2015.08.28.1"
+local MBC_MINOR = "2015.08.28.2"
 if not LibStub then
     error(MBC .. " requires LibStub.")
 end
