@@ -552,7 +552,7 @@ function MyEquipment:LayoutEquipmentFrame(self)
 		if self.isLive then
 			local start,duration, enable = GetInventoryItemCooldown("player", slot)
 			local cooldown = _G[itemButton:GetName() .. "Cooldown"]
-			CooldownFrame_SetTimer(cooldown,start,duration,enable)
+			CooldownFrame_Set(cooldown,start,duration,enable)
 			if duration>0 and enable==0 then
 				SetItemButtonTextureVertexColor(itemButton, 0.4,0.4,0.4)
 			end
