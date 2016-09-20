@@ -1,5 +1,5 @@
 local MBC = "MyBagsCore-1.1"
-local MBC_MINOR = "2016.09.08.1"
+local MBC_MINOR = "2016.09.20.1"
 
 -- Lua APIs
 local error, assert, pairs, unpack = error, assert, pairs, unpack
