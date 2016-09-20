@@ -7,7 +7,7 @@ local MYBANK_DEFAULT_OPTIONS = {
 	["Count"]         = "free",
 	["HlItems"]       = true,
 	["Sort"]          = "realm",
-	["Search"]				= true,
+	["Search"]		  = true,
 	["HlBags"]        = true,
 	["Freeze"]        = "sticky",
 	["Lock"]          = false,
@@ -20,7 +20,7 @@ local MYBANK_DEFAULT_OPTIONS = {
 	["Cache"]         = nil,
 	["Player"]        = true,
 	["Scale"]         = false,
-	["Strata"]				= "DIALOG",
+	["Strata"]		  = "DIALOG",
 	["Anchor"]        = "bottomleft",
 	["BackColor"]     = {0.7,0,0,0},
 	["SlotColor"]     = nil,
@@ -35,11 +35,11 @@ local MYBANK_DEFAULT_OPTIONS = {
 	["_RIGHTOFFSET"]  = 3,
 }
 
-MyBank = LibStub("AceAddon-3.0"):NewAddon("MyBank", "MyBagsCore-1.0", "AceHook-3.0", "AceEvent-3.0", "AceConsole-3.0")
+MyBank = LibStub("AceAddon-3.0"):NewAddon("MyBank", "MyBagsCore-1.1", "AceHook-3.0", "AceEvent-3.0", "AceConsole-3.0")
 local MB_Config = LibStub("AceConfig-3.0")
 local MB_Dialog = LibStub("AceConfigDialog-3.0")
 local MB_Cmd    = LibStub("AceConfigCmd-3.0")
-local MB_Core		= LibStub("MyBagsCore-1.0")
+local MB_Core		= LibStub("MyBagsCore-1.1")
 
 local L = LibStub("AceLocale-3.0"):GetLocale("MyBags")
 
@@ -470,7 +470,7 @@ end
 
 function MyBank:UserDropDown_Initialize()
 	local this = self or _G.this
-	local chars, char_num, i
+	local chars, char_num
 	chars = MyBank:GetSortedCharList(MyBank.GetOpt("Sort"))
 	char_num = getn(chars)
 	if (char_num == 0) then
@@ -526,18 +526,20 @@ function MyBank:ToggleAllBags(forceopen)
 	else
 		ToggleBackpack()
 	end
-	local action, i
+	local action
 	if (IsBagOpen(0) or MyInventory.frame:IsVisible()) then 
 		action = "OpenBag" 
 	else 
 		action = "CloseBag" 
 	end
-	for i=1, 4, 1 do
+
+	for i = 1, 4, 1 do
 		if not (MyInventory.GetOpt("Replace") and MyInventory:IncludeBag(i)) then
 			self.hooks[action](i)
 		end
 	end
-	for i=5, 11, 1 do
+
+	for i = 5, 11, 1 do
 		if not MyBank.GetOpt("Replace") or not MyBank:IncludeBag(i) then
 			self.hooks[action](i)
 		end
@@ -603,15 +605,12 @@ function MyBank:GetInfoFunc()
 	if IsAddOnLoaded("DataStore_Containers") then
 		return self.GetInfoDataStore
 	end
-	if IsAddOnLoaded("MyBagsCache") then
-		return self.GetInfoMyBagsCache
-	end
+
 	return self.GetInfoNone
 end
 
 function MyBank:GetSortedCharList(sorttype, realm)
 	if IsAddOnLoaded("DataStore_Containers") then
-		local realmname
 		local realmlist = {}
 		local realmcount = 0
 		if not realm then
@@ -625,9 +624,7 @@ function MyBank:GetSortedCharList(sorttype, realm)
 		end
 		local result = {}
 		local idx = 0
-		local i
-		local charname, charkey
-		for i=1, realmcount do
+		for i = 1, realmcount do
 			for charname, charkey in pairs(DataStore:GetCharacters(realmlist[i])) do
 				-- charkey = DataStore:GetCharacter(charname, realmlist[i])
 				if DataStore_Containers.Characters[charkey] then
@@ -656,48 +653,6 @@ function MyBank:GetSortedCharList(sorttype, realm)
 					y_time = 0
 				else
 					y_time = DataStore:GetModuleLastUpdate(DataStore_Containers, charName, realmName)
-				end
-				if self:SortChars(q, w, x_time, y_time, sorttype) then
-					result[i] = w
-					result[i+1] = q
-					swapped = 1
-				end
-			end
-		until swapped == 0
-		return result
-	end
-	if IsAddOnLoaded("MyBagsCache") then
-		local result = {}
-		local idx = 0
-		local cache = MyBagsCache.db.global
-		local index, value
-		for index, value in pairs(cache) do
-			local charName, realmID = self:SplitString(index)
-			if index ~= "profiles" then
-				if (not realm or realmID == realm) then
-					idx = idx + 1
-					result[idx] = index
-				end
-			end
-		end
-		local swapped
-		local q, w
-		local x_time, y_time
-		local i
-		repeat
-			swapped = 0
-			for i = 1, idx-1 do
-				q = result[i]
-				w = result[i+1]
-				if (not cache[q].updateTime) then
-					x_time = 0
-				else
-					x_time = cache[q].updateTime
-				end
-				if (not cache[w].updateTime) then
-					y_time = 0
-				else
-					y_time = cache[w].updateTime
 				end
 				if self:SortChars(q, w, x_time, y_time, sorttype) then
 					result[i] = w
