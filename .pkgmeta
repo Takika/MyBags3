@@ -33,24 +33,3 @@ externals:
     Libs/AceGUI-3.0:
         url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceGUI-3.0
         tag: latest
-    MyBagsCache/Libs/LibStub:
-        url: svn://svn.wowace.com/wow/libstub/mainline/trunk
-        tag: latest
-    MyBagsCache/Libs/CallbackHandler-1.0:
-        url: svn://svn.wowace.com/wow/callbackhandler/mainline/trunk/CallbackHandler-1.0
-        tag: latest
-    MyBagsCache/Libs/AceAddon-3.0:
-        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceAddon-3.0
-        tag: latest
-    MyBagsCache/Libs/AceEvent-3.0:
-        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceEvent-3.0
-        tag: latest
-    MyBagsCache/Libs/AceDB-3.0:
-        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceDB-3.0
-        tag: latest
-    MyBagsCache/Libs/AceLocale-3.0:
-        url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceLocale-3.0
-        tag: latest
-
-move-folders:
-    MyBags/MyBagsCache: MyBagsCache
