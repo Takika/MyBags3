@@ -49,18 +49,68 @@ MyEquipment = LibStub("AceAddon-3.0"):NewAddon("MyEquipment", "AceConsole-3.0", 
 local ME_Dialog = LibStub("AceConfigDialog-3.0")
 local ME_Cmd = LibStub("AceConfigCmd-3.0")
 
+-- Lua APIs
+local pairs = pairs
+local strlen, strsub, strfind, strtrim = string.len, string.sub, string.find, strtrim
+local select = select
+local tonumber = tonumber
+
+-- WoW APIs
+local _G = _G
+local ChatEdit_InsertLink = ChatEdit_InsertLink
+local CursorCanGoInSlot = CursorCanGoInSlot
+local CursorUpdate = CursorUpdate
+local DressUpItemLink = DressUpItemLink
+local GetInventoryItemCooldown = GetInventoryItemCooldown
+local GetInventoryItemCount = GetInventoryItemCount
+local GetInventoryItemLink = GetInventoryItemLink
+local GetInventoryItemTexture = GetInventoryItemTexture
+local GetInventorySlotInfo = GetInventorySlotInfo
+local InRepairMode = InRepairMode
+local IsControlKeyDown = IsControlKeyDown
+local IsInventoryItemLocked = IsInventoryItemLocked
+local IsShiftKeyDown = IsShiftKeyDown
+local PaperDollItemSlotButton_OnClick = PaperDollItemSlotButton_OnClick
+local PaperDollItemSlotButton_OnEvent = PaperDollItemSlotButton_OnEvent
+local PaperDollItemSlotButton_OnModifiedClick = PaperDollItemSlotButton_OnModifiedClick
+local SetItemButtonCount = SetItemButtonCount
+local SetItemButtonDesaturated = SetItemButtonDesaturated
+local SetItemButtonTexture = SetItemButtonTexture
+local SetItemButtonTextureVertexColor = SetItemButtonTextureVertexColor
+local SetTooltipMoney = SetTooltipMoney
+local ShowInspectCursor = ShowInspectCursor
+local UnitHasRelicSlot = UnitHasRelicSlot
+
+--Global variables that we don't cache, list them here for the mikk's Find Globals script
+-- GLOBALS: 
+
+
 local function ColorConvertHexToDigit(h)
-    if(strlen(h)~=6) then return 0,0,0 end
-    local r={a=10,b=11,c=12,d=13,e=14,f=15}
-    return ((tonumber(strsub(h,1,1)) or r[strsub(h,1,1)] or 0) * 16 + (tonumber(strsub(h,2,2)) or r[strsub(h,2,2)] or 0))/255, 
-        ((tonumber(strsub(h,3,3)) or r[strsub(h,3,3)] or 0) * 16 + (tonumber(strsub(h,4,4)) or r[strsub(h,4,4)] or 0))/255,
-        ((tonumber(strsub(h,5,5)) or r[strsub(h,5,5)] or 0) * 16 + (tonumber(strsub(h,6,6)) or r[strsub(h,6,6)] or 0))/255
+    if (strlen(h) ~= 6) then
+        return 0, 0, 0
+    end
+
+    local r = {
+        a = 10,
+        b = 11,
+        c = 12,
+        d = 13,
+        e = 14,
+        f = 15
+    }
+
+    return ((tonum(strsub(h, 1, 1)) or r[strsub(h, 1, 1)] or 0) * 16 + (tonum(strsub(h, 2, 2)) or r[strsub(h, 2, 2)] or 0)) / 255, 
+        ((tonum(strsub(h, 3, 3)) or r[strsub(h, 3, 3)] or 0) * 16 + (tonum(strsub(h, 4, 4)) or r[strsub(h, 4, 4)] or 0)) / 255,
+        ((tonum(strsub(h, 5, 5)) or r[strsub(h, 5, 5)] or 0) * 16 + (tonum(strsub(h, 6, 6)) or r[strsub(h, 6, 6)] or 0)) / 255
 end
 
 local function GetItemInfoFromLink(l)
-    if(not l) then return end
-    local c,id,il,n=select(3, strfind(l,"|cff(%x+)|Hitem:(%-?%d+)([^|]+)|h%[(.-)%]|h|r"))
-    return n,c,id..il,id
+    if (not l) then
+        return
+    end
+
+    local c, t, id, il, n = select(3, strfind(l, "|cff(%x+)|H(%l+):(%-?%d+)([^|]+)|h%[(.-)%]|h|r"))
+    return n, c, id .. il, id, t
 end
 
 local function tonum(val)
@@ -311,7 +361,7 @@ end
 
 function MyEquipment:OnEnable()
     MyEquipmentFramePortrait:SetTexture("Interface\\Addons\\MyBags\\Skin\\MyEquipmentPortrait")
-    for key,value in pairs( SLOTNAMES ) do -- Just in case Blizzard shuffles the slot name table around
+    for key,value in pairs(SLOTNAMES) do -- Just in case Blizzard shuffles the slot name table around
         local slotId = GetInventorySlotInfo(value)
         MYEQUIPMENT_SLOT[slotId] = value
     end
@@ -331,7 +381,10 @@ end
 function MyEquipment:LoadDropDown()
     local dropDown = _G[self.frameName .. "CharSelectDropDown"]
     local dropDownButton = _G[self.frameName .. "CharSelectDropDownButton"]
-    if not dropDown then return end
+    if not dropDown then
+        return
+    end
+
     local last_this = _G["this"]
     _G["this"] = dropDownButton
     UIDropDownMenu_Initialize(dropDown, self.UserDropDown_Initialize)
@@ -345,11 +398,12 @@ function MyEquipment:UserDropDown_Initialize()
     local this = self or _G.this
     local chars, charnum
     chars = MyEquipment:GetSortedCharList(MyEquipment.GetOpt("Sort"))
-    charnum = getn(chars)
+    charnum = #chars
     if (charnum == 0) then
-        self.GetOpt("Player")
+        -- self.GetOpt("Player")
         return
     end
+
     local frame = this:GetParent():GetParent()
     local selectedValue = UIDropDownMenu_GetSelectedValue(this)
 
@@ -361,7 +415,10 @@ function MyEquipment:UserDropDown_Initialize()
             ["owner"] = frame.self,
             ["checked"] = nil,
         }
-        if selectedValue == info.value then info.checked = 1 end
+        if selectedValue == info.value then
+            info.checked = 1
+        end
+
         UIDropDownMenu_AddButton(info)
     end
 end
@@ -416,8 +473,8 @@ end
 
 function MyEquipment:MyEquipmentItemSlotButton_OnLoad(widget)
     widget:RegisterForDrag("LeftButton")
-    _G[widget:GetName().."NormalTexture"]:SetTexture("Interface\\AddOns\\MyBags\\Skin\\Button")
-    widget.UpdateTooltip = widget.MyEquipmentItemSlotButton_OnEnter;
+    _G[widget:GetName() .. "NormalTexture"]:SetTexture("Interface\\AddOns\\MyBags\\Skin\\Button")
+    widget.UpdateTooltip = widget.MyEquipmentItemSlotButton_OnEnter
 end
 
 function MyEquipment:MyEquipmentItemSlotButton_OnEnter(widget)
@@ -427,10 +484,14 @@ function MyEquipment:MyEquipmentItemSlotButton_OnEnter(widget)
         local hasItem, hasCooldown, repairCost = GameTooltip:SetInventoryItem("player", widget:GetID())
         if not hasItem then
             text = TEXT(_G[MYEQUIPMENT_SLOT[tonum(strsub(widget:GetName(), 21))]])
-            if widget.hasRelic then text = TEXT(_G["RELICSLOT"]) end
+            if widget.hasRelic then
+                text = TEXT(_G["RELICSLOT"])
+            end
+
             GameTooltip:SetText(text)
         end
-        if ( InRepairMode() and repairCost and (repairCost > 0) ) then
+
+        if (InRepairMode() and repairCost and (repairCost > 0)) then
             GameTooltip:AddLine(TEXT(REPAIR_COST), "", 1, 1, 1)
             SetTooltipMoney(GameTooltip, repairCost)
             GameTooltip:Show()
@@ -443,11 +504,19 @@ function MyEquipment:MyEquipmentItemSlotButton_OnEnter(widget)
         local _, count, ID, _, quality, _, name = self:GetInfo(widget:GetID())
         if ID and ID ~= "" then
             local hyperlink = self:GetHyperlink(ID)
-            if hyperlink then GameTooltip:SetHyperlink(hyperlink) end
-            if IsControlKeyDown() and hyperlink then ShowInspectCursor() end
+            if hyperlink then
+                GameTooltip:SetHyperlink(hyperlink)
+            end
+
+            if IsControlKeyDown() and hyperlink then
+                ShowInspectCursor()
+            end
         else
             text = TEXT(_G[MYEQUIPMENT_SLOT[tonum(strsub(widget:GetName(), 21))]])
-            if widget.hasRelic then text = TEXT(_G["RELICSLOT"]) end
+            if widget.hasRelic then
+                text = TEXT(_G["RELICSLOT"])
+            end
+
             if name then -- it's a bleeding ammo slot
                 text = name
                 GameTooltip:SetText(text, ColorConvertHexToDigit(quality))
@@ -472,16 +541,19 @@ function MyEquipment:MyEquipmentItemSlotButton_OnModifiedClick(widget, button)
     if self.isLive then
         PaperDollItemSlotButton_OnModifiedClick(widget, button)
     else
-        if ( button == "LeftButton" ) then
-            if ( IsControlKeyDown() ) then
-                local ID = select(3, self:GetInfo( widget:GetID() ))
+        if (button == "LeftButton") then
+            if (IsControlKeyDown()) then
+                local ID = select(3, self:GetInfo(widget:GetID()))
                 if DressUpItemLink and ID and ID ~= "" then
                     DressUpItemLink("item:"..ID)
                 end
-            elseif ( IsShiftKeyDown() ) then
-                local ID = select(3, self:GetInfo( widget:GetID() ))
+            elseif (IsShiftKeyDown()) then
+                local ID = select(3, self:GetInfo(widget:GetID()))
                 local hyperLink
-                if ID then hyperLink = self:GetHyperlink(ID) end
+                if ID then
+                    hyperLink = self:GetHyperlink(ID)
+                end
+
                 if hyperLink then 
                     ChatEdit_InsertLink(hyperLink)
                 end
@@ -500,20 +572,21 @@ function MyEquipment:MyEquipmentItemSlotButton_OnEvent(widget, event)
     if self.isLive then
         PaperDollItemSlotButton_OnEvent(widget, event)
     else
-        if ( event == "CURSOR_UPDATE" ) then
-            if ( CursorCanGoInSlot(widget:GetID() ) ) then
+        if (event == "CURSOR_UPDATE") then
+            if (CursorCanGoInSlot(widget:GetID())) then
                 widget:LockHighlight()
             else
                 widget:UnlockHighlight()
             end
+
             return
         end
     end
 end
 
 function MyEquipment:MyEquipmentItemSlotButton_OnUpdate(widget, elapsed)
-    if ( GameTooltip:IsOwned(widget) ) and self.isLive then
-            self:MyEquipmentItemSlotButton_OnEnter(widget)
+    if (GameTooltip:IsOwned(widget)) and self.isLive then
+        self:MyEquipmentItemSlotButton_OnEnter(widget)
     end
 end
 
@@ -529,7 +602,7 @@ function MyEquipment:LayoutEquipmentFrame(self)
         self.curCol = self.curCol + 1
     end
 
-    for key, value in pairs( SLOTNAMES ) do
+    for key, value in pairs(SLOTNAMES) do
         local slot = GetInventorySlotInfo(value)
         local itemButton = _G[itemBase .. slot]
         if self.curCol >= self.GetOpt("Columns") then
@@ -545,24 +618,30 @@ function MyEquipment:LayoutEquipmentFrame(self)
         if id and id ~= "" then
             itemButton.hasItem = 1
         end
+
         if self.isLive then
-            local start,duration, enable = GetInventoryItemCooldown("player", slot)
+            local start, duration, enable = GetInventoryItemCooldown("player", slot)
             local cooldown = _G[itemButton:GetName() .. "Cooldown"]
-            CooldownFrame_Set(cooldown,start,duration,enable)
-            if duration>0 and enable==0 then
+            CooldownFrame_Set(cooldown, start, duration, enable)
+            if duration > 0 and enable == 0 then
                 SetItemButtonTextureVertexColor(itemButton, 0.4,0.4,0.4)
             end
         end
+
         if value == "RANGEDSLOT" and hasRelic then
             itemButton.hasRelic = 1
         end
+
         SetItemButtonTexture(itemButton, (texture or ""))
         SetItemButtonCount(itemButton, count)
         SetItemButtonDesaturated(itemButton, locked, 0.5, 0.5, 0.5)
         if locked and locked ~= "" then
             itemButton:LockHighlight()
-            self.watchLock =1
-        else itemButton:UnlockHighlight() end
+            self.watchLock = 1
+        else
+            itemButton:UnlockHighlight()
+        end
+
         if quality and self.GetOpt("Border") then
             SetItemButtonNormalTextureVertexColor(itemButton, ColorConvertHexToDigit(quality))
         else
@@ -572,7 +651,7 @@ function MyEquipment:LayoutEquipmentFrame(self)
 end
 
 function MyEquipment:ME_ChatCommand(input)
-    if not input or input:trim() == "" then
+    if not input or strtrim(input) == "" then
         ME_Dialog:Open(self.name)
     else
         ME_Cmd.HandleCommand(MyEquipment, "myequipment", self.name, input)
@@ -580,6 +659,7 @@ function MyEquipment:ME_ChatCommand(input)
 end
 
 function MyEquipment:GetSortedCharList(sorttype, realm)
+    local result = {}
 --[[
     if IsAddOnLoaded("DataStore_Inventory") then
         local realmname
@@ -594,7 +674,6 @@ function MyEquipment:GetSortedCharList(sorttype, realm)
             realmcount = 1
             realmlist[1] = realm
         end
-        local result = {}
         local idx = 0
         local i
         local charname, charkey
@@ -609,7 +688,7 @@ function MyEquipment:GetSortedCharList(sorttype, realm)
         end
         local swapped
         local q, w
-        local x_time, y_time;
+        local x_time, y_time
         local charName, realmName
         repeat
             swapped = 0
@@ -635,7 +714,7 @@ function MyEquipment:GetSortedCharList(sorttype, realm)
                 end
             end
         until swapped == 0
-        return result
     end
 ]]
+    return result
 end
