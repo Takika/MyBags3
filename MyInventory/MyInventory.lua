@@ -524,7 +524,7 @@ function MyInventory:CompanionOpen()
 end
 
 function MyInventory:CompanionClose()
-    if self.Companion then -- if not true it's a duplicate event
+    if self.Companion then -- if not true it is a duplicate event
         self.Companion = nil
         self:CloseBackpack()
     end
@@ -566,6 +566,7 @@ function MyInventory:MI_ChatCommand(input)
 end
 
 function MyInventory:GetSortedCharList(sorttype, realm)
+    local result = {}
     if IsAddOnLoaded("DataStore_Containers") then
         local realmlist = {}
         local realmcount = 0
@@ -578,7 +579,6 @@ function MyInventory:GetSortedCharList(sorttype, realm)
             realmcount = 1
             realmlist[1] = realm
         end
-        local result = {}
         local idx = 0
         for i = 1, realmcount do
             for charname, _ in pairs(DataStore:GetCharacters(realmlist[i])) do
@@ -617,6 +617,6 @@ function MyInventory:GetSortedCharList(sorttype, realm)
                 end
             end
         until swapped == 0
-        return result
     end
+    return result
 end
