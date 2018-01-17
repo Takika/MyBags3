@@ -25,7 +25,7 @@ local GetBankSlotCost = GetBankSlotCost
 local GetContainerItemCooldown = GetContainerItemCooldown
 local GetContainerItemInfo = GetContainerItemInfo
 local GetContainerItemLink = GetContainerItemLink
-local GetContainerNumSlots = GetContainerNumSlots
+local ContainerFrame_GetContainerNumSlots = ContainerFrame_GetContainerNumSlots
 local GetInventoryItemTexture = GetInventoryItemTexture
 local GetInventorySlotInfo = GetInventorySlotInfo
 local GetItemIcon = GetItemIcon
@@ -680,7 +680,7 @@ function MyBagsCore:GetInfoLive(bag, slot)
     else
         -- it's a bag
         i_type = "bag"
-        count = GetContainerNumSlots(bag)
+        count = ContainerFrame_GetContainerNumSlots(bag)
         local itemLink
         local inventoryID = self:BagIDToInvSlotID(bag)
         if inventoryID then
@@ -693,10 +693,8 @@ function MyBagsCore:GetInfoLive(bag, slot)
             readable = IsSpecialtyBagFromLink(itemLink)
         elseif (bag == -1) then
             texture = "Interface\\Buttons\\Button-Backpack-Up"
-            count = 28
         elseif (bag == 0) then                
             texture = "Interface\\Buttons\\Button-Backpack-Up"
-            count = 16
         end
     end
 
