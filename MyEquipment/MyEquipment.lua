@@ -483,16 +483,16 @@ function MyEquipment:MyEquipmentItemSlotButton_OnEnter(widget)
     if self.isLive then
         local hasItem, hasCooldown, repairCost = GameTooltip:SetInventoryItem("player", widget:GetID())
         if not hasItem then
-            text = TEXT(_G[MYEQUIPMENT_SLOT[tonum(strsub(widget:GetName(), 21))]])
+            text = _G[MYEQUIPMENT_SLOT[tonum(strsub(widget:GetName(), 21))]]
             if widget.hasRelic then
-                text = TEXT(_G["RELICSLOT"])
+                text = _G["RELICSLOT"]
             end
 
             GameTooltip:SetText(text)
         end
 
         if (InRepairMode() and repairCost and (repairCost > 0)) then
-            GameTooltip:AddLine(TEXT(REPAIR_COST), "", 1, 1, 1)
+            GameTooltip:AddLine(REPAIR_COST, "", 1, 1, 1)
             SetTooltipMoney(GameTooltip, repairCost)
             GameTooltip:Show()
         elseif hasItem and IsControlKeyDown() then
@@ -512,9 +512,9 @@ function MyEquipment:MyEquipmentItemSlotButton_OnEnter(widget)
                 ShowInspectCursor()
             end
         else
-            text = TEXT(_G[MYEQUIPMENT_SLOT[tonum(strsub(widget:GetName(), 21))]])
+            text = _G[MYEQUIPMENT_SLOT[tonum(strsub(widget:GetName(), 21))]]
             if widget.hasRelic then
-                text = TEXT(_G["RELICSLOT"])
+                text = _G["RELICSLOT"]
             end
 
             if name then -- it's a bleeding ammo slot

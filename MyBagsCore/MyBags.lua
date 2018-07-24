@@ -1056,7 +1056,7 @@ function MyBagsCore:BagButton_OnDragStart(widget)
         local invID = self:BagIDToInvSlotID(bagFrame:GetID())
         if invID then
             PickupBagFromSlot(invID)
-            PlaySound("BAGMENUBUTTONPRESS")
+            PlaySound(SOUNDKIT.IG_BACKPACK_OPEN)
             self.watchLock = 1
         end
     end
@@ -1636,7 +1636,7 @@ function MyBagsCore:LayoutFrameOnEvent(event, unit)
 end
 
 function MyBagsCore:SortBags()
-    PlaySound("UI_BagSorting_01")
+    PlaySound(SOUNDKIT.UI_BAG_SORTING_01)
     SortBags()
 end
 

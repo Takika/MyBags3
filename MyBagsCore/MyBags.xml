@@ -200,7 +200,7 @@
 -->
 			<OnChar function="BagSearch_OnChar"/>
 			<OnEnterPressed function="EditBox_ClearFocus"/>
-			<OnEditFocusLost function="BagSearch_OnEditFocusLost"/>
+			<OnEditFocusLost function="SearchBoxTemplate_OnEditFocusLost"/>
 <!--
 			<OnEditFocusGained function="BagSearch_OnEditFocusGained"/>
 -->
@@ -432,10 +432,10 @@
 		</Frames>
 		<Scripts>
 			<OnShow>
-				PlaySound("igBackPackOpen")
+				PlaySound(SOUNDKIT.IG_BACKPACK_OPEN)
 			</OnShow>
 			<OnHide>
-				PlaySound("igBackPackClose")
+				PlaySound(SOUNDKIT.IG_BACKPACK_CLOSE)
 			</OnHide>
 			<OnMouseDown>
 				mybags = self.self

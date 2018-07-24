@@ -441,9 +441,9 @@ function MyBank:OnEnable()
     MyBankFramePortrait:SetTexture("Interface\\Addons\\MyBags\\Skin\\MyBankPortrait")
     StaticPopupDialogs["PURCHASE_BANKBAG"] = {
         preferredIndex = STATICPOPUPS_NUMDIALOGS,
-        text = TEXT(CONFIRM_BUY_BANK_SLOT),
-        button1 = TEXT(YES),
-        button2 = TEXT(NO),
+        text = CONFIRM_BUY_BANK_SLOT,
+        button1 = YES,
+        button2 = NO,
         OnAccept = function(self)
             if CT_oldPurchaseSlot then
                 CT_oldPurchaseSlot()
@@ -719,6 +719,6 @@ function MyBank:SetReplace()
 end
 
 function MyBank:SortBags()
-  PlaySound("UI_BagSorting_01")
+  PlaySound(SOUNDKIT.UI_BAG_SORTING_01)
   SortBankBags()
 end
