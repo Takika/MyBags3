@@ -1,5 +1,5 @@
 local MBC = "MyBagsCore-1.1"
-local MBC_MINOR = "2016.09.20.1"
+local MBC_MINOR = "2018.07.24.1"
 
 -- Lua APIs
 local error, assert, pairs, unpack = error, assert, pairs, unpack
@@ -1088,8 +1088,9 @@ function MyBagsCore:LayoutOptions()
     local slots = _G[self.frameName .. "Slots"]
     local buttons = _G[self.frameName .. "Buttons"]
     local sortButton = _G[self.frameName .. "SortButton"]
-
+    local token = _G[self.frameName .. "TokenFrame"]
     local search = _G[self.frameName .. "SearchBox"]
+
     if search then
         if self.GetOpt("Search") then
             search:SetParent(self.frameName)
@@ -1119,41 +1120,79 @@ function MyBagsCore:LayoutOptions()
         cash:Hide()
     end
 
-    local token = _G[self.frameName .. "TokenFrame"]
-    if self.GetOpt("Token") and ManageBackpackTokenFrame then
-        if (BackpackTokenFrame_IsShown()) then
-            token:SetParent(self.frameName)
-            token:SetPoint("RIGHT", cash, "LEFT", -10, 0)
-            for i = 1, MAX_WATCHED_TOKENS do
-                local name, count, icon, currencyID = GetBackpackCurrencyInfo(i)
-                -- Update watched tokens
-                local watchButton = _G[self.frameName .. "TokenFrameToken" .. i]
-                if (name) then
-                    watchButton.icon:SetTexture(icon)
-                    if (count <= 99999) then
-                        watchButton.count:SetText(count)
-                    else
-                        watchButton.count:SetText("*")
-                    end
+    if not (self.isEquipment) then
+        -- TokenFrame
+        if self.GetOpt("Token") and ManageBackpackTokenFrame then
+            if (BackpackTokenFrame_IsShown()) then
+                token:SetParent(self.frameName)
+                token:SetPoint("RIGHT", cash, "LEFT", -10, 0)
+                for i = 1, MAX_WATCHED_TOKENS do
+                    local name, count, icon, currencyID = GetBackpackCurrencyInfo(i)
+                    -- Update watched tokens
+                    local watchButton = _G[self.frameName .. "TokenFrameToken" .. i]
+                    if (name) then
+                        watchButton.icon:SetTexture(icon)
+                        if (count <= 99999) then
+                            watchButton.count:SetText(count)
+                        else
+                            watchButton.count:SetText("*")
+                        end
 
-                    watchButton.currencyID = currencyID
-                    watchButton:Show()
-                    BackpackTokenFrame.shouldShow = 1
-                    BackpackTokenFrame.numWatchedTokens = i
-                else
-                    watchButton:Hide()
-                    if (i == 1) then
-                        BackpackTokenFrame.shouldShow = nil
+                        watchButton.currencyID = currencyID
+                        watchButton:Show()
+                        BackpackTokenFrame.shouldShow = 1
+                        BackpackTokenFrame.numWatchedTokens = i
+                    else
+                        watchButton:Hide()
+                        if (i == 1) then
+                            BackpackTokenFrame.shouldShow = nil
+                        end
                     end
                 end
-            end
 
-            token:Show()
+                token:Show()
+            else
+                token:Hide()
+            end
         else
             token:Hide()
         end
-    else
-        token:Hide()
+
+        -- Free/Used slots
+        local count, used, displaySlots = self:GetSlotCount()
+        count = tonum(count)
+        displaySlots = tonum(displaySlots)
+        used = tonum(used)
+        if self.GetOpt("Count") == "free" then
+            slots:Show()
+            slots:SetText(format(L["MYBAGS_SLOTS_FREE"], (count - used), count ))
+        elseif self.GetOpt("Count") == "used" then
+            slots:Show()
+            slots:SetText(format(L["MYBAGS_SLOTS_USED"], (used), count ))
+        else
+            slots:Hide()
+        end
+
+        if self.GetOpt("Reverse") then
+            self.reverseOrder = true
+        else
+            self.reverseOrder = false
+        end
+
+        -- sortButton
+        if self.isLive and self.GetOpt("BagSort") then
+            -- sortButton:ClearAllPoints()
+            sortButton:SetPoint("TOPRIGHT", search, "TOPLEFT", -20, 1)
+            sortButton:SetScript("OnEnter", nil)
+            sortButton:SetScript("OnLeave", nil)
+            sortButton:SetScript("OnClick", function()
+                self:SortBags();
+            end)
+
+            sortButton:Show()
+        else
+            sortButton:Hide()
+        end
     end
 
     if self.GetOpt("Buttons") then
@@ -1205,29 +1244,6 @@ function MyBagsCore:LayoutOptions()
         self.curRow = self.curRow + 1
     end
 
-    local count, used, displaySlots = nil
-    if not (self.isEquipment) then
-        count, used, displaySlots = self:GetSlotCount()
-        count = tonum(count)
-        displaySlots = tonum(displaySlots)
-        used = tonum(used)
-        if self.GetOpt("Count") == "free" then
-            slots:Show()
-            slots:SetText(format(L["MYBAGS_SLOTS_FREE"], (count - used), count ))
-        elseif self.GetOpt("Count") == "used" then
-            slots:Show()
-            slots:SetText(format(L["MYBAGS_SLOTS_USED"], (used), count ))
-        else
-            slots:Hide()
-        end
-
-        if self.GetOpt("Reverse") then
-            self.reverseOrder = true
-        else
-            self.reverseOrder = false
-        end
-    end
-
     if self.GetOpt("AIOI") then
         self.aioiOrder = true
         local columns = self.GetOpt("Columns")
@@ -1246,28 +1262,6 @@ function MyBagsCore:LayoutOptions()
         end
     else
         self.aioiOrder = false
-    end
-
-    if self.isLive and self.GetOpt("BagSort") then
-        -- sortButton:ClearAllPoints()
-        sortButton:SetPoint("TOPRIGHT", search, "TOPLEFT", -20, 1)
-        sortButton:SetScript("OnEnter", nil)
-        sortButton:SetScript("OnLeave", nil)
-        sortButton:SetScript("OnClick", function()
-            self:SortBags();
-        end)
-        --[[
-        if search:IsShown() then
-            sortButton:SetPoint("TOPRIGHT", search, "TOPLEFT", -8, 0)
-        elseif playerSelectFrame:IsShown() then
-            sortButton:SetPoint("TOPRIGHT", playerSelectFrame, "TOPLEFT", -8, 0)
-        else
-            sortButton:SetPoint("TOPRIGHT", self.frameName, "TOPRIGHT", -8, -32)
-        end
-        ]]
-        sortButton:Show()
-    else
-        sortButton:Hide()
     end
 end
 

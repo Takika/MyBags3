@@ -84,6 +84,9 @@ local UnitHasRelicSlot = UnitHasRelicSlot
 --Global variables that we don't cache, list them here for the mikk's Find Globals script
 -- GLOBALS: 
 
+local function tonum(val)
+    return tonumber(val or 0)
+end
 
 local function ColorConvertHexToDigit(h)
     if (strlen(h) ~= 6) then
