@@ -562,13 +562,13 @@ function MyBank:ToggleAllBags(forceopen)
     end
 
     for i = 1, 4, 1 do
-        if not (MyInventory.GetOpt("Replace") and MyInventory:IncludeBag(i)) then
+        if not MyInventory.GetOpt("Replace") then
             self.hooks[action](i)
         end
     end
 
     for i = 5, 11, 1 do
-        if not MyBank.GetOpt("Replace") or not MyBank:IncludeBag(i) then
+        if not MyBank.GetOpt("Replace") then
             self.hooks[action](i)
         end
     end
@@ -578,13 +578,13 @@ function MyBank:CloseAllBags()
     MyInventory:Close()
     CloseBackpack() -- just in case backpack is not contolled by MyInventory
     for i = 1, 4, 1 do
-        if not MyInventory.GetOpt("Replace") or not MyInventory:IncludeBag(i) then
+        if not MyInventory.GetOpt("Replace") then
             self.hooks.CloseBag(i)
         end
     end
 
     for i = 5, 11, 1 do
-        if not MyBank.GetOpt("Replace") or not MyBank:IncludeBag(i) then
+        if not MyBank.GetOpt("Replace") then
             self.hooks.CloseBag(i)
         end
     end

@@ -487,7 +487,7 @@ function MyInventory:HookFunctions()
 end
 
 function MyInventory:ToggleBackpack()
-    if not (self.GetOpt("Replace") and self:IncludeBag(0)) then
+    if not self.GetOpt("Replace") then
         self.hooks.ToggleBackpack()
     else
         self:Toggle()
@@ -495,7 +495,7 @@ function MyInventory:ToggleBackpack()
 end
 
 function MyInventory:OpenBackpack()
-    if not (self.GetOpt("Replace") and self:IncludeBag(0)) then
+    if not self.GetOpt("Replace") then
         self.hooks["OpenBackpack"]()
     else
         if MailFrame:IsVisible() then self.Companion = 1 end
@@ -505,7 +505,7 @@ function MyInventory:OpenBackpack()
 end
 
 function MyInventory:CloseBackpack()
-    if not (self.GetOpt("Replace") and self:IncludeBag(0)) then
+    if not self.GetOpt("Replace") then
         self.hooks.CloseBackpack()
     elseif not self.Freeze then
         self:Close()

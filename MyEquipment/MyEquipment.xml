@@ -1,27 +1,27 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/"
-     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-     xsi:schemaLocation="http://www.blizzard.com/wow/ui/FrameXML/UI.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/FrameXML/UI.xsd">
     <Script file="MyEquipment.lua" />
 
     <!-- Templates -->
-   <Button name="MyEquipmentItemButtonTemplate" inherits="ItemButtonTemplate" virtual="true">
+    <ItemButton name="MyEquipmentItemButtonTemplate" virtual="true">
         <Frames>
             <Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
         </Frames>
-      <Scripts>
+        <Scripts>
             <OnLoad>
                 MyEquipment:MyEquipmentItemSlotButton_OnLoad(self)
             </OnLoad>
             <OnClick>
                 if (not IsModifierKeyDown()) then
-                    mybags = self:GetParent():GetParent().self
-                    mybags:MyEquipmentItemSlotButton_OnClick(self, button)
+                mybags = self:GetParent():GetParent().self
+                mybags:MyEquipmentItemSlotButton_OnClick(self, button)
                 end
             </OnClick>
             <PostClick>
                 if (IsModifierKeyDown()) then
-                    mybags = self:GetParent():GetParent().self
-                    mybags:MyEquipmentItemSlotButton_OnModifiedClick(self, button)
+                mybags = self:GetParent():GetParent().self
+                mybags:MyEquipmentItemSlotButton_OnModifiedClick(self, button)
                 end
             </PostClick>
             <OnDragStart>
@@ -48,34 +48,34 @@
                 mybags:MyEquipmentItemSlotButton_OnEvent(self, event)
             </OnEvent>
         </Scripts>
-   </Button>
+    </ItemButton>
 
-   <Frame name="MyEquipmentTemplate" virtual="true">
-      <Frames>
-         <Frame name="$parentBackRow1"/>         
-         <Frame name="$parentBackRow2"/>
-         <Frame name="$parentBackRow3"/>
-         <Button name="$parentItem0"  inherits="MyEquipmentItemButtonTemplate" id="0"/>
-         <Button name="$parentItem1"  inherits="MyEquipmentItemButtonTemplate" id="1"/>
-         <Button name="$parentItem2"  inherits="MyEquipmentItemButtonTemplate" id="2"/>
-         <Button name="$parentItem3"  inherits="MyEquipmentItemButtonTemplate" id="3"/>
-         <Button name="$parentItem4"  inherits="MyEquipmentItemButtonTemplate" id="4"/>
-         <Button name="$parentItem5"  inherits="MyEquipmentItemButtonTemplate" id="5"/>
-         <Button name="$parentItem6"  inherits="MyEquipmentItemButtonTemplate" id="6"/>
-         <Button name="$parentItem7"  inherits="MyEquipmentItemButtonTemplate" id="7"/>
-         <Button name="$parentItem8"  inherits="MyEquipmentItemButtonTemplate" id="8"/>
-         <Button name="$parentItem9"  inherits="MyEquipmentItemButtonTemplate" id="9"/>
-         <Button name="$parentItem10" inherits="MyEquipmentItemButtonTemplate" id="10"/>
-         <Button name="$parentItem11" inherits="MyEquipmentItemButtonTemplate" id="11"/>
-         <Button name="$parentItem12" inherits="MyEquipmentItemButtonTemplate" id="12"/>
-         <Button name="$parentItem13" inherits="MyEquipmentItemButtonTemplate" id="13"/>
-         <Button name="$parentItem14" inherits="MyEquipmentItemButtonTemplate" id="14"/>
-         <Button name="$parentItem15" inherits="MyEquipmentItemButtonTemplate" id="15"/>
-         <Button name="$parentItem16" inherits="MyEquipmentItemButtonTemplate" id="16"/>
-         <Button name="$parentItem17" inherits="MyEquipmentItemButtonTemplate" id="17"/>
-         <Button name="$parentItem18" inherits="MyEquipmentItemButtonTemplate" id="18"/>
-         <Button name="$parentItem19" inherits="MyEquipmentItemButtonTemplate" id="19"/>
-      </Frames>
+    <Frame name="MyEquipmentTemplate" virtual="true">
+        <Frames>
+            <Frame name="$parentBackRow1"/>
+            <Frame name="$parentBackRow2"/>
+            <Frame name="$parentBackRow3"/>
+            <ItemButton name="$parentItem0"  inherits="MyEquipmentItemButtonTemplate" id="0"/>
+            <ItemButton name="$parentItem1"  inherits="MyEquipmentItemButtonTemplate" id="1"/>
+            <ItemButton name="$parentItem2"  inherits="MyEquipmentItemButtonTemplate" id="2"/>
+            <ItemButton name="$parentItem3"  inherits="MyEquipmentItemButtonTemplate" id="3"/>
+            <ItemButton name="$parentItem4"  inherits="MyEquipmentItemButtonTemplate" id="4"/>
+            <ItemButton name="$parentItem5"  inherits="MyEquipmentItemButtonTemplate" id="5"/>
+            <ItemButton name="$parentItem6"  inherits="MyEquipmentItemButtonTemplate" id="6"/>
+            <ItemButton name="$parentItem7"  inherits="MyEquipmentItemButtonTemplate" id="7"/>
+            <ItemButton name="$parentItem8"  inherits="MyEquipmentItemButtonTemplate" id="8"/>
+            <ItemButton name="$parentItem9"  inherits="MyEquipmentItemButtonTemplate" id="9"/>
+            <ItemButton name="$parentItem10" inherits="MyEquipmentItemButtonTemplate" id="10"/>
+            <ItemButton name="$parentItem11" inherits="MyEquipmentItemButtonTemplate" id="11"/>
+            <ItemButton name="$parentItem12" inherits="MyEquipmentItemButtonTemplate" id="12"/>
+            <ItemButton name="$parentItem13" inherits="MyEquipmentItemButtonTemplate" id="13"/>
+            <ItemButton name="$parentItem14" inherits="MyEquipmentItemButtonTemplate" id="14"/>
+            <ItemButton name="$parentItem15" inherits="MyEquipmentItemButtonTemplate" id="15"/>
+            <ItemButton name="$parentItem16" inherits="MyEquipmentItemButtonTemplate" id="16"/>
+            <ItemButton name="$parentItem17" inherits="MyEquipmentItemButtonTemplate" id="17"/>
+            <ItemButton name="$parentItem18" inherits="MyEquipmentItemButtonTemplate" id="18"/>
+            <ItemButton name="$parentItem19" inherits="MyEquipmentItemButtonTemplate" id="19"/>
+        </Frames>
     </Frame>
 
     <Frame name="MyEquipmentFrameTemplate" virtual="true" movable="true" enableMouse="true" toplevel="true" hidden="true">
@@ -106,7 +106,7 @@
                 <Texture name="$parentTextureTopRight" file="Interface\AddOns\MyBags\Skin\TopRight" hidden="false">
                     <Size><AbsDimension x="64" y="128"/></Size>
                     <Anchors>
-                        <Anchor point="TOPRIGHT"> 
+                        <Anchor point="TOPRIGHT">
                             <Offset><AbsDimension x="36" y="58"/></Offset>
                         </Anchor>
                     </Anchors>
@@ -129,7 +129,7 @@
                 <Texture name="$parentTextureBottomRight" file="Interface\AddOns\MyBags\Skin\BottomRight" hidden="false">
                     <Size><AbsDimension x="64" y="128"/></Size>
                     <Anchors>
-                        <Anchor point="BOTTOMRIGHT"> 
+                        <Anchor point="BOTTOMRIGHT">
                             <Offset><AbsDimension x="36" y="-60"/></Offset>
                         </Anchor>
                     </Anchors>
@@ -207,7 +207,7 @@
             <OnMouseDown>
                 mybags = self.self
                 if not mybags.GetOpt("Lock") then
-                    self:GetParent():StartMoving()
+                self:GetParent():StartMoving()
                 end
             </OnMouseDown>
             <OnMouseUp>

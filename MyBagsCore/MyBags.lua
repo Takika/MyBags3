@@ -373,7 +373,7 @@ function MyBagsCore:HookFunctions(obj)
 end
 
 function MyBagsCore:ToggleBag(bag)
-    if self.GetOpt("Replace") and self:IncludeBag(bag) then
+    if self.GetOpt("Replace") then
         self:Toggle()
     else
         self.hooks.ToggleBag(bag)
@@ -381,7 +381,7 @@ function MyBagsCore:ToggleBag(bag)
 end
 
 function MyBagsCore:OpenBag(bag)
-    if (self.GetOpt("Replace") and self:IncludeBag(bag)) then
+    if self.GetOpt("Replace") then
         self:Open()
     elseif not self.isBank then
         self.hooks.OpenBag(bag)
@@ -389,7 +389,7 @@ function MyBagsCore:OpenBag(bag)
 end
 
 function MyBagsCore:CloseBag(bag)
-    if not self.Freeze and (self.GetOpt("Replace") and self:IncludeBag(bag)) then
+    if not self.Freeze and self.GetOpt("Replace") then
         self:Close()
     elseif not self.isBank then
         self.hooks.CloseBag(bag)
@@ -557,24 +557,6 @@ function MyBagsCore:BagIDToInvSlotID(bag, isBank)
     end
 
     return ContainerIDToInventoryID(bag)
-end
-
-function MyBagsCore:IncludeBag(bag)
-    if self.isBank and bag == BANK_CONTAINER then
-        return true
-    end
-
-    if bag < self.firstBag or bag > (self.firstBag + self.totalBags - 1) then
-        return false
-    else
-        local prof = self.db:GetCurrentProfile()
-        local bs = "BagSlot" .. bag
-        if self.db.profiles[prof][bs] and self.db.profiles[prof][bs]["Exclude"] then
-            return false
-        end
-
-        return true
-    end
 end
 
 function MyBagsCore:IsBagSlotUsable(bag)
@@ -774,7 +756,7 @@ function MyBagsCore:GetSlotCount()
 
     for bagIndex = 0, self.totalBags - 1 do
         local bagFrame = _G[self.frameName .. "Bag" .. bagIndex]
-        if bagFrame and self:IncludeBag(bagFrame:GetID()) then
+        if bagFrame then
             local bagID = bagFrame:GetID()
             local _, bagSlots, _, _, _, specBag = self:GetInfo(bagID)
             bagSlots = tonum(bagSlots)
@@ -797,7 +779,7 @@ end
 
 --ITEMBUTTONS--
 function MyBagsCore:ItemButton_OnLoad(widget)
-    _G[widget:GetName() .. "NormalTexture"]:SetTexture("Interface\\AddOns\\MyBags\\Skin\\Button")
+    _G[widget:GetName()]:SetNormalTexture("Interface\\AddOns\\MyBags\\Skin\\Button")
     ContainerFrameItemButton_OnLoad(widget)
     widget.UpdateTooltip = widget.ItemButton_OnEnter
 end
@@ -1003,12 +985,6 @@ function MyBagsCore:BagButton_OnLeave(widget)
 end
 
 function MyBagsCore:BagButton_OnClick(widget, button, ignoreShift)
-    if self.isBank then
-        widget:SetChecked(nil)
-    else
-        widget:SetChecked(self:IncludeBag(widget:GetID()))
-    end
-
     if self.isLive then
         if button == "LeftButton" then
             if not self:IsBagSlotUsable(widget:GetParent():GetID()) then
@@ -1029,31 +1005,15 @@ function MyBagsCore:BagButton_OnClick(widget, button, ignoreShift)
             else
             end
         else
-            if (IsShiftKeyDown()) then
-                local prof = self.db:GetCurrentProfile()
-                local bgnum = widget:GetParent():GetID()
-                local bg = "BagSlot" .. bgnum
-                if (self.db.profiles[prof][bg] and self.db.profiles[prof][bg]["Exclude"]) then
-                    self.db.profiles[prof][bg]["Exclude"] = false
-                else
-                    if not self.db.profiles[prof][bg] then
-                        self.db.profiles[prof][bg] = {}
-                    end
-
-                    self.db.profiles[prof][bg]["Exclude"] = true
-                end
-
-                self.hooks.CloseBag(bgnum)
-                self:LayoutFrame()
-            end
+            -- Right mouse button
         end
     end
 end
 
 function MyBagsCore:BagButton_OnDragStart(widget)
     if self.isLive then
-        local bagFrame = widget:GetParent()
-        local invID = self:BagIDToInvSlotID(bagFrame:GetID())
+        local bagFrameID = widget:GetParent():GetID()
+        local invID = self:BagIDToInvSlotID(bagFrameID)
         if invID then
             PickupBagFromSlot(invID)
             PlaySound(SOUNDKIT.IG_BACKPACK_OPEN)
@@ -1064,8 +1024,8 @@ end
 
 function MyBagsCore:BagButton_OnReceiveDrag(widget)
     if self.isLive then
-        local bagFrame = widget:GetParent()
-        local invID = self:BagIDToInvSlotID(bagFrame:GetID())
+        local bagFrameID = widget:GetParent():GetID()
+        local invID = self:BagIDToInvSlotID(bagFrameID)
         local hadItem
         if not invID then
             hadItem = PutItemInBackpack()
@@ -1073,11 +1033,12 @@ function MyBagsCore:BagButton_OnReceiveDrag(widget)
             hadItem = PutItemInBag(invID)
         end
 
-        if not hadItem then
-            if not self:IncludeBag(bagFrame:GetID()) then
-                self.hooks.ToggleBag(bagFrame:GetID())
-            end
+        if ( not hadItem ) then
+            self:ToggleBag(bagFrameID)
         end
+        self:LayoutFrame()
+
+        -- self:BagButton_OnClick(widget, "LeftButton", 1)
     end
 end
 
@@ -1427,14 +1388,9 @@ function MyBagsCore:LayoutBagFrame(bagFrame)
         else
             bagButton:Hide()
         end
-        if not self:IncludeBag(bagFrame:GetID()) or self.isBank then
-            bagButton:SetChecked(nil)
-        else
-            bagButton:SetChecked(1)
-        end
     end
 
-    if bagFrame.size < 1 or not self:IncludeBag(bagFrame:GetID()) then
+    if bagFrame.size < 1 then
         bagFrame.size = 0
     else
         for slot = 1, bagFrame.size do
@@ -1442,7 +1398,7 @@ function MyBagsCore:LayoutBagFrame(bagFrame)
             if (_G[itemBase .. slot]) then
                 itemButton = _G[itemBase .. slot]
             else
-                itemButton = CreateFrame("Button", itemBase .. slot, bagFrame, "MyBagsItemButtonTemplate")
+                itemButton = CreateFrame("ItemButton", itemBase .. slot, bagFrame, "MyBagsItemButtonTemplate")
             end
 
             if (self:IsLive()) then
@@ -1947,7 +1903,6 @@ local mixins = {
     "GetHyperlink",
     "GetTextLink",
     "BagIDToInvSlotID",
-    "IncludeBag",
     "IsBagSlotUsable",
     "GetCash",
     "SplitString",

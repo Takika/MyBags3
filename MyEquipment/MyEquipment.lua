@@ -476,7 +476,7 @@ end
 
 function MyEquipment:MyEquipmentItemSlotButton_OnLoad(widget)
     widget:RegisterForDrag("LeftButton")
-    _G[widget:GetName() .. "NormalTexture"]:SetTexture("Interface\\AddOns\\MyBags\\Skin\\Button")
+    _G[widget:GetName()]:SetNormalTexture("Interface\\AddOns\\MyBags\\Skin\\Button")
     widget.UpdateTooltip = widget.MyEquipmentItemSlotButton_OnEnter
 end
 
@@ -635,6 +635,7 @@ function MyEquipment:LayoutEquipmentFrame(self)
             itemButton.hasRelic = 1
         end
 
+        -- itemButton:SetNormalTexture(texture or "")
         SetItemButtonTexture(itemButton, (texture or ""))
         SetItemButtonCount(itemButton, count)
         SetItemButtonDesaturated(itemButton, locked, 0.5, 0.5, 0.5)
