@@ -2,7 +2,7 @@
 	 xsi:schemaLocation="http://www.blizzard.com/wow/ui/FrameXML/UI.xsd">
 	<Script file="MyBags.lua"/>
 	<!-- Templates -->
-	<ItemButton name="MyBagsItemButtonTemplate" inherits="ContainerFrameItemButtonTemplate" virtual="true" hidden="true">
+	<Button name="MyBagsItemButtonTemplate" inherits="ContainerFrameItemButtonTemplate" virtual="true" hidden="true">
 		<Frames>
 			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
 		</Frames>
@@ -40,8 +40,8 @@
 				end
 			</OnUpdate>
 		</Scripts>
-	</ItemButton>
-	<ItemButton name="MyBagsBagButtonTemplate" mixin="BagSlotMixin" hidden="true" virtual="true">
+	</Button>
+	<CheckButton name="MyBagsBagButtonTemplate" inherits="ItemButtonTemplate" hidden="true" virtual="true">
 		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
 		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
 		<Scripts>
@@ -71,13 +71,13 @@
 				mybags:BagButton_OnLeave(self)
 			</OnLeave>
 		</Scripts>
-	</ItemButton>
+	</CheckButton>
 	<Frame name="MyBagsContainerTemplate" virtual="true">
 		<Frames>
 			<Frame name="$parentBackRow1"/>
 			<Frame name="$parentBackRow2"/>
 			<Frame name="$parentBackRow3"/>
-			<ItemButton name="$parentBag" inherits="MyBagsBagButtonTemplate" id="0"/>
+			<CheckButton name="$parentBag" inherits="MyBagsBagButtonTemplate" id="0"/>
 		</Frames>
 	</Frame>
 	<Frame name="MyBagsButtonBarTemplate" hidden="false" virtual="true">
@@ -366,6 +366,7 @@
 			<Frame name="$parentBag4" inherits="MyBagsContainerTemplate" id="4"/>
 			<Frame name="$parentButtons" inherits="MyBagsButtonBarTemplate"/>
 			<Frame name="$parentCharSelect" inherits="MyBagsCharSelectTemplate"/>
+			<!--
 			<Button name="$parentSortButton">
                 <Size x="28" y="26"/>
                 <NormalTexture atlas="bags-button-autosort-up"/>
@@ -382,6 +383,8 @@
                     <OnClick/>
                 </Scripts>
 			</Button>
+			-->
+			<!--
 			<Frame name="$parentTokenFrame">
 				<Size>
 					<AbsDimension x="183" y="32"/>
@@ -410,6 +413,7 @@
 					</Button>
 				</Frames>
 			</Frame>
+			-->
 			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate" hidden="false">
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT">

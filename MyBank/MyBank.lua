@@ -2,7 +2,7 @@ local MYBANK_DEFAULT_OPTIONS = {
     ["Columns"]       = 14,
     ["Replace"]       = true,
     ["Bag"]           = "bar",
-    ["BagSort"]       = true,
+    -- ["BagSort"]       = true,
     ["Graphics"]      = "art",
     ["Count"]         = "free",
     ["HlItems"]       = true,
@@ -35,11 +35,11 @@ local MYBANK_DEFAULT_OPTIONS = {
     ["_RIGHTOFFSET"]  = 3,
 }
 
-MyBank = LibStub("AceAddon-3.0"):NewAddon("MyBank", "MyBagsCore-1.1", "AceHook-3.0", "AceEvent-3.0", "AceConsole-3.0")
+MyBank = LibStub("AceAddon-3.0"):NewAddon("MyBank", "MyBagsCore-1.2", "AceHook-3.0", "AceEvent-3.0", "AceConsole-3.0")
 local MB_Config = LibStub("AceConfig-3.0")
 local MB_Dialog = LibStub("AceConfigDialog-3.0")
 local MB_Cmd    = LibStub("AceConfigCmd-3.0")
-local MB_Core   = LibStub("MyBagsCore-1.1")
+local MB_Core   = LibStub("MyBagsCore-1.2")
 
 local L = LibStub("AceLocale-3.0"):GetLocale("MyBags")
 
@@ -55,7 +55,7 @@ local MoneyFrame_Update = MoneyFrame_Update
 local OpenBackpack = OpenBackpack
 local PlaySound = PlaySound
 local SetPortraitTexture = SetPortraitTexture
-local SortBankBags = SortBankBags
+-- local SortBankBags = SortBankBags
 local ToggleBackpack = ToggleBackpack
 
 --Global variables that we don't cache, list them here for the mikk's Find Globals script
@@ -156,6 +156,7 @@ function MyBank:OnInitialize()
                     MyBank:SetBagDisplay(val)
                 end,
             },
+            --[[
             bagsort = {
                 type = "toggle",
                 name = "BagSort",
@@ -167,6 +168,7 @@ function MyBank:OnInitialize()
                     MyBank:SetBagSort()
                 end,
             },
+            ]]
             back = {
                 type = "select",
                 name = "Background",
@@ -699,6 +701,8 @@ function MyBank:GetSortedCharList(sorttype, realm)
                 end
             end
         until swapped == 0
+    else
+        result[1] = self:GetCurrentPlayer()
     end
 
     return result
@@ -718,7 +722,9 @@ function MyBank:SetReplace()
     end
 end
 
+--[[
 function MyBank:SortBags()
   PlaySound(SOUNDKIT.UI_BAG_SORTING_01)
   SortBankBags()
 end
+]]

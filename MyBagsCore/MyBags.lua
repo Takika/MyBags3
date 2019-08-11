@@ -1,5 +1,5 @@
-local MBC = "MyBagsCore-1.1"
-local MBC_MINOR = "2018.07.24.1"
+local MBC = "MyBagsCore-1.2"
+local MBC_MINOR = "2019.08.11.1"
 
 -- Lua APIs
 local error, assert, pairs, unpack = error, assert, pairs, unpack
@@ -11,7 +11,7 @@ local tostring, tonumber, select = tostring, tonumber, select
 -- WoW APIs
 local _G = _G
 local NewItemsIsNewItem = C_NewItems.IsNewItem
-local BackpackTokenFrame_IsShown = BackpackTokenFrame_IsShown
+-- local BackpackTokenFrame_IsShown = BackpackTokenFrame_IsShown
 local BankButtonIDToInvSlotID = BankButtonIDToInvSlotID
 local BattlePetToolTip_Show = BattlePetToolTip_Show
 local ChatEdit_InsertLink = ChatEdit_InsertLink
@@ -52,7 +52,7 @@ local SetItemButtonTextureVertexColor = SetItemButtonTextureVertexColor
 local SetMoneyFrameColor = SetMoneyFrameColor
 local SetTooltipMoney = SetTooltipMoney
 local ShowInspectCursor = ShowInspectCursor
-local SortBags = SortBags
+-- local SortBags = SortBags
 local StaticPopup_Show = StaticPopup_Show
 local UnitName = UnitName
 
@@ -914,7 +914,7 @@ function MyBagsCore:BagButton_OnEnter(widget)
             setTooltip = false
         end
 
-        if (bagID == 0 or not IsInventoryItemProfessionBag("player", ContainerIDToInventoryID(bagID))) then
+        if (bagID == 0 or not IsInventoryItemProfessionBag("player", self:BagIDToInvSlotID(bagID))) then
             GameTooltip:AddLine(CLICK_BAG_SETTINGS)
         end
     else
@@ -1048,8 +1048,6 @@ function MyBagsCore:LayoutOptions()
     local cash = _G[self.frameName .. "MoneyFrame"]
     local slots = _G[self.frameName .. "Slots"]
     local buttons = _G[self.frameName .. "Buttons"]
-    local sortButton = _G[self.frameName .. "SortButton"]
-    local token = _G[self.frameName .. "TokenFrame"]
     local search = _G[self.frameName .. "SearchBox"]
 
     if search then
@@ -1083,6 +1081,8 @@ function MyBagsCore:LayoutOptions()
 
     if not (self.isEquipment) then
         -- TokenFrame
+        --[[
+        local token = _G[self.frameName .. "TokenFrame"]
         if self.GetOpt("Token") and ManageBackpackTokenFrame then
             if (BackpackTokenFrame_IsShown()) then
                 token:SetParent(self.frameName)
@@ -1118,6 +1118,7 @@ function MyBagsCore:LayoutOptions()
         else
             token:Hide()
         end
+        ]]
 
         -- Free/Used slots
         local count, used, displaySlots = self:GetSlotCount()
@@ -1140,7 +1141,9 @@ function MyBagsCore:LayoutOptions()
             self.reverseOrder = false
         end
 
+        --[[
         -- sortButton
+        local sortButton = _G[self.frameName .. "SortButton"]
         if self.isLive and self.GetOpt("BagSort") then
             -- sortButton:ClearAllPoints()
             sortButton:SetPoint("TOPRIGHT", search, "TOPLEFT", -20, 1)
@@ -1154,6 +1157,7 @@ function MyBagsCore:LayoutOptions()
         else
             sortButton:Hide()
         end
+        ]]
     end
 
     if self.GetOpt("Buttons") then
@@ -1398,7 +1402,7 @@ function MyBagsCore:LayoutBagFrame(bagFrame)
             if (_G[itemBase .. slot]) then
                 itemButton = _G[itemBase .. slot]
             else
-                itemButton = CreateFrame("ItemButton", itemBase .. slot, bagFrame, "MyBagsItemButtonTemplate")
+                itemButton = CreateFrame("Button", itemBase .. slot, bagFrame, "MyBagsItemButtonTemplate")
             end
 
             if (self:IsLive()) then
@@ -1578,17 +1582,19 @@ function MyBagsCore:LayoutFrameOnEvent(event, unit)
         return
     end
 
-    if event == "BAG_UPDATE_COOLDOWN" then
+    if event == "BAG_UPDATE_COOLDOWN" or event == "PLAYERBANKSLOTS_CHANGED" or event == "PLAYERBANKBAGSLOTS_CHANGED" then
         if self.isLive then
             self:LayoutFrame()
         end
     end
 end
 
+--[[
 function MyBagsCore:SortBags()
     PlaySound(SOUNDKIT.UI_BAG_SORTING_01)
     SortBags()
 end
+]]
 
 function MyBagsCore:LockButton_OnClick()
     self.TogOpt("Lock")
@@ -1749,10 +1755,12 @@ function MyBagsCore:SetStrata(strata)
     end
 end
 
+--[[
 function MyBagsCore:SetBagSort()
     self.TogMsg("BagSort", "Bag sorting")
     self:LayoutFrame()
 end
+]]
 
 function MyBagsCore:ResetSettings()
     self.db:ResetProfile()
@@ -1931,7 +1939,7 @@ local mixins = {
     "LayoutBagFrame",
     "LayoutFrame",
     "LayoutFrameOnEvent",
-    "SortBags",
+    -- "SortBags",
     "LockButton_OnClick",
     "SetColumns",
     "SetReplace",
@@ -1953,7 +1961,7 @@ local mixins = {
     "SetCount",
     "SetScale",
     "SetStrata",
-    "SetBagSort",
+    -- "SetBagSort",
     "ResetSettings",
     "ResetAnchor",
     "SetAnchor",

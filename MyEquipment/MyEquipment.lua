@@ -45,9 +45,10 @@ local MYEQUIPMENT_DEFAULT_OPTIONS = {
     ["_RIGHTOFFSET"]  = 3,
 }
 
-MyEquipment = LibStub("AceAddon-3.0"):NewAddon("MyEquipment", "AceConsole-3.0", "AceHook-3.0", "AceEvent-3.0", "MyBagsCore-1.1")
+MyEquipment = LibStub("AceAddon-3.0"):NewAddon("MyEquipment", "AceConsole-3.0", "AceHook-3.0", "AceEvent-3.0", "MyBagsCore-1.2")
 local ME_Dialog = LibStub("AceConfigDialog-3.0")
 local ME_Cmd = LibStub("AceConfigCmd-3.0")
+local AC = LibStub("AceConsole-3.0")
 
 -- Lua APIs
 local pairs = pairs
@@ -460,7 +461,7 @@ end
 
 function MyEquipment:GetEquipInfoLive(itemIndex)
     local itemLink = GetInventoryItemLink("player",itemIndex)
-    local texture, count, quality, ID = nil
+    local texture, count, ID, quality, readable = nil
     if itemLink or itemIndex == 0 then
         texture = GetInventoryItemTexture("player",itemIndex)
         count = GetInventoryItemCount("player",itemIndex)
@@ -607,7 +608,13 @@ function MyEquipment:LayoutEquipmentFrame(self)
 
     for key, value in pairs(SLOTNAMES) do
         local slot = GetInventorySlotInfo(value)
-        local itemButton = _G[itemBase .. slot]
+        -- local itemButton = _G[itemBase .. slot]
+        local itemButton
+        if (_G[itemBase .. slot]) then
+            itemButton = _G[itemBase .. slot]
+        else
+            itemButton = CreateFrame("Button", itemBase .. slot, self, "MyEquipmentItemButtonTemplate")
+        end
         if self.curCol >= self.GetOpt("Columns") then
             self.curCol = 0
             self.curRow = self.curRow + 1
@@ -720,5 +727,7 @@ function MyEquipment:GetSortedCharList(sorttype, realm)
         until swapped == 0
     end
 ]]
+    result[1] = self:GetCurrentPlayer()
+
     return result
 end

@@ -2,7 +2,7 @@ local MYINVENTORY_DEFAULT_OPTIONS = {
     ["Columns"]       = 12,
     ["Replace"]       = true,
     ["Bag"]           = "bar",
-    ["BagSort"]       = true,
+    -- ["BagSort"]       = true,
     ["Graphics"]      = "art",
     ["Count"]         = "free",
     ["HlItems"]       = true,
@@ -38,10 +38,10 @@ local MYINVENTORY_DEFAULT_OPTIONS = {
     ["_RIGHTOFFSET"]  = 3,
 }
 
-MyInventory = LibStub("AceAddon-3.0"):NewAddon("MyInventory", "AceConsole-3.0", "AceHook-3.0", "AceEvent-3.0", "MyBagsCore-1.1")
+MyInventory = LibStub("AceAddon-3.0"):NewAddon("MyInventory", "AceConsole-3.0", "AceHook-3.0", "AceEvent-3.0", "MyBagsCore-1.2")
 local MI_Dialog = LibStub("AceConfigDialog-3.0")
 local MI_Cmd = LibStub("AceConfigCmd-3.0")
-local MB_Core       = LibStub("MyBagsCore-1.1")
+local MB_Core       = LibStub("MyBagsCore-1.2")
 
 local L = LibStub("AceLocale-3.0"):GetLocale("MyBags")
 
@@ -138,6 +138,7 @@ function MyInventory:OnInitialize()
                     MyInventory:SetBagDisplay(val)
                 end
             },
+            --[[
             bagsort = {
                 type = "toggle",
                 name = "BagSort",
@@ -149,6 +150,7 @@ function MyInventory:OnInitialize()
                     MyInventory:SetBagSort()
                 end,
             },
+            ]]
             back = {
                 type = "select",
                 name = "Background",
@@ -440,13 +442,15 @@ end
 
 function MyInventory:LoadDropDown()
     local dropDown = _G[self.frameName .. "CharSelectDropDown"]
+    if not dropDown then
+        return
+    end
+
     local dropDownButton = _G[self.frameName .. "CharSelectDropDownButton"]
-    if not dropDown then return end
     local last_this = _G["this"]
     _G["this"] = dropDownButton
     UIDropDownMenu_Initialize(dropDown, self.UserDropDown_Initialize)
     UIDropDownMenu_SetSelectedValue(dropDown, self:GetCurrentPlayer())
---    UIDropDownMenu_SetSelectedValue(dropDown, self.Player)
     UIDropDownMenu_SetWidth(dropDown, 140)
     _G["this"] = last_this
 end
@@ -455,7 +459,7 @@ function MyInventory:UserDropDown_Initialize()
     local this = self or _G.this
     local chars = MyInventory:GetSortedCharList(MyInventory.GetOpt("Sort"))
     local frame = this:GetParent():GetParent()
-    local selectedValue = UIDropDownMenu_GetSelectedValue(this)
+    local selectedValue = MyInventory:GetCurrentPlayer()
 
     for i = 1, getn(chars) do
         local info = {
@@ -465,7 +469,11 @@ function MyInventory:UserDropDown_Initialize()
             ["owner"] = frame.self,
             ["checked"] = nil,
         }
-        if selectedValue == info.value then info.checked = 1 end
+
+        if selectedValue == info.value then
+            info.checked = 1
+        end
+
         UIDropDownMenu_AddButton(info)
     end
 end
@@ -617,6 +625,9 @@ function MyInventory:GetSortedCharList(sorttype, realm)
                 end
             end
         until swapped == 0
+    else
+        result[1] = self:GetCurrentPlayer()
     end
+
     return result
 end
