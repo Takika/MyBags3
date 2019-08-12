@@ -20,6 +20,8 @@ local SLOTNAMES             = {
     "TRINKET1SLOT",
     "MAINHANDSLOT",
     "SECONDARYHANDSLOT",
+	"RANGEDSLOT", -- Readded in WoW Classic
+	"AMMOSLOT" -- Readded in WoW Classic
 }
 
 local MYEQUIPMENT_DEFAULT_OPTIONS = {
@@ -608,13 +610,21 @@ function MyEquipment:LayoutEquipmentFrame(self)
 
     for key, value in pairs(SLOTNAMES) do
         local slot = GetInventorySlotInfo(value)
-        -- local itemButton = _G[itemBase .. slot]
+        local itemButton = _G[itemBase .. slot]
+        --[[
         local itemButton
         if (_G[itemBase .. slot]) then
             itemButton = _G[itemBase .. slot]
         else
             itemButton = CreateFrame("Button", itemBase .. slot, self, "MyEquipmentItemButtonTemplate")
         end
+        ]]
+       -- AMMOSLOT readded in WoW Classic
+		if value == "AMMOSLOT" and (hasRelic or hideAmmo) then
+			itemButton:Hide()
+			break
+		end
+
         if self.curCol >= self.GetOpt("Columns") then
             self.curCol = 0
             self.curRow = self.curRow + 1
