@@ -2,7 +2,7 @@
 ## Author: Ramble (modified by Isharra) (updated by thegabbert) (converted to Ace3 by Takika)
 ## Title: MyBags |cff007FFF -Ace3-|r
 ## Notes: Complete Replacement for Inventory and Bank Bags.
-## Version: v11302-1.7.9beta15
+## Version: v11302-1.7.9beta16
 ## OptionalDeps: DataStore, DataStore_Containers, DataStore_Characters
 ## SavedVariables: MyInventoryDB, MyBankDB, MyEquipmentDB
 
