@@ -50,7 +50,7 @@ local MYEQUIPMENT_DEFAULT_OPTIONS = {
 MyEquipment = LibStub("AceAddon-3.0"):NewAddon("MyEquipment", "AceConsole-3.0", "AceHook-3.0", "AceEvent-3.0", "MyBagsCore-1.2")
 local ME_Dialog = LibStub("AceConfigDialog-3.0")
 local ME_Cmd = LibStub("AceConfigCmd-3.0")
-local AC = LibStub("AceConsole-3.0")
+-- local AC = LibStub("AceConsole-3.0")
 
 -- Lua APIs
 local pairs = pairs
@@ -367,7 +367,7 @@ end
 
 function MyEquipment:OnEnable()
     MyEquipmentFramePortrait:SetTexture("Interface\\Addons\\MyBags\\Skin\\MyEquipmentPortrait")
-    for key,value in pairs(SLOTNAMES) do -- Just in case Blizzard shuffles the slot name table around
+    for _,value in pairs(SLOTNAMES) do -- Just in case Blizzard shuffles the slot name table around
         local slotId = GetInventorySlotInfo(value)
         MYEQUIPMENT_SLOT[slotId] = value
     end
@@ -487,7 +487,7 @@ function MyEquipment:MyEquipmentItemSlotButton_OnEnter(widget)
     local text
     self:TooltipSetOwner(widget)
     if self.isLive then
-        local hasItem, hasCooldown, repairCost = GameTooltip:SetInventoryItem("player", widget:GetID())
+        local hasItem, _, repairCost = GameTooltip:SetInventoryItem("player", widget:GetID())
         if not hasItem then
             text = _G[MYEQUIPMENT_SLOT[tonum(strsub(widget:GetName(), 21))]]
             if widget.hasRelic then
@@ -608,7 +608,7 @@ function MyEquipment:LayoutEquipmentFrame(self)
         self.curCol = self.curCol + 1
     end
 
-    for key, value in pairs(SLOTNAMES) do
+    for _, value in pairs(SLOTNAMES) do
         local slot = GetInventorySlotInfo(value)
         local itemButton = _G[itemBase .. slot]
         --[[
@@ -619,6 +619,7 @@ function MyEquipment:LayoutEquipmentFrame(self)
             itemButton = CreateFrame("Button", itemBase .. slot, self, "MyEquipmentItemButtonTemplate")
         end
         ]]
+
        -- AMMOSLOT readded in WoW Classic
 		if value == "AMMOSLOT" and (hasRelic or hideAmmo) then
 			itemButton:Hide()

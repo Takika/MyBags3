@@ -20,7 +20,7 @@ local CooldownFrame_Set = CooldownFrame_Set
 local CreateFrame = CreateFrame
 local CursorUpdate = CursorUpdate
 local DressUpItemLink = DressUpItemLink
-local GetBackpackCurrencyInfo = GetBackpackCurrencyInfo
+-- local GetBackpackCurrencyInfo = GetBackpackCurrencyInfo
 local GetBankSlotCost = GetBankSlotCost
 local GetContainerItemCooldown = GetContainerItemCooldown
 local GetContainerItemInfo = GetContainerItemInfo
@@ -144,11 +144,10 @@ local function GetBattlePetInfoFromLink(l)
         return
     end
 
-    local id, lvl, rar, hp, pw, sp, n
+    local id, lvl, rar, hp, pw, sp, _, n
     if (strfind(l, "Hbattlepet")) then
         -- "|cff0070dd|Hbattlepet:1178:1:3:152:13:10:0x0000000000000000|h[Sunreaver Micro-Sentry]|h|r"
-        local u
-        id, lvl, rar, hp, pw, sp, u, n = select(4, strfind(l, "|cff(%x+)|Hbattlepet:(%-?%d+):(%d+):(%d+):(%d+):(%d+):(%d+):([^|]+)|h%[(.-)%]|h|r"))
+        id, lvl, rar, hp, pw, sp, _, n = select(4, strfind(l, "|cff(%x+)|Hbattlepet:(%-?%d+):(%d+):(%d+):(%d+):(%d+):(%d+):([^|]+)|h%[(.-)%]|h|r"))
     end
 
     return tonum(id), tonum(lvl), tonum(rar), tonum(hp), tonum(pw), tonum(sp), n
@@ -295,7 +294,7 @@ function MyBagsCore:OnEmbedInitialize(addon)
     addon.frame = _G[addon.frameName]
     addon.frame.self = addon
     local inOptions = false
-    for key, value in pairs(INTERFACEOPTIONS_ADDONCATEGORIES) do
+    for _, value in pairs(INTERFACEOPTIONS_ADDONCATEGORIES) do
         if value.name == "MyBags" then
             inOptions = true
         end
@@ -1976,7 +1975,7 @@ local mixins = {
 } 
 
 function MyBagsCore:Embed(target)
-    for k, v in pairs(mixins) do
+    for _, v in pairs(mixins) do
         target[v] = self[v]
     end
 

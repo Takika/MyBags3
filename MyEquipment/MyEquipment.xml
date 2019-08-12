@@ -186,7 +186,7 @@
             </Layer>
         </Layers>
         <Frames>
-            <Frame name="MyEquipmentSlots" inherits="MyEquipmentTemplate"/>
+            <Frame name="$parentSlots" inherits="MyEquipmentTemplate"/>
             <Frame name="$parentButtons" inherits="MyBagsButtonBarTemplate"/>
             <Frame name="$parentCharSelect" inherits="MyBagsCharSelectTemplate"/>
             <Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate" hidden="false">

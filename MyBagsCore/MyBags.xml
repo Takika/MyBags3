@@ -423,7 +423,7 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
-			<EditBox name="$parentSearchBox" inherits="MyBagsSearchBoxTemplate" letters="15" hidden="false" text="SEARCH">
+			<EditBox name="$parentSearchBox" inherits="MyBagsSearchBoxTemplate" letters="15" hidden="false">
 				<Size x="130" y="20"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativeTo="$parentCharSelect" relativePoint="BOTTOMLEFT">

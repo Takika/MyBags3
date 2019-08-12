@@ -36,7 +36,7 @@ local MYBANK_DEFAULT_OPTIONS = {
 }
 
 MyBank = LibStub("AceAddon-3.0"):NewAddon("MyBank", "MyBagsCore-1.2", "AceHook-3.0", "AceEvent-3.0", "AceConsole-3.0")
-local MB_Config = LibStub("AceConfig-3.0")
+-- local MB_Config = LibStub("AceConfig-3.0")
 local MB_Dialog = LibStub("AceConfigDialog-3.0")
 local MB_Cmd    = LibStub("AceConfigCmd-3.0")
 local MB_Core   = LibStub("MyBagsCore-1.2")
@@ -53,7 +53,7 @@ local CloseBackpack = CloseBackpack
 local IsBagOpen = IsBagOpen
 local MoneyFrame_Update = MoneyFrame_Update
 local OpenBackpack = OpenBackpack
-local PlaySound = PlaySound
+-- local PlaySound = PlaySound
 local SetPortraitTexture = SetPortraitTexture
 -- local SortBankBags = SortBankBags
 local ToggleBackpack = ToggleBackpack
