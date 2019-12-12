@@ -72,6 +72,46 @@
 			</OnLeave>
 		</Scripts>
 	</CheckButton>
+	<CheckButton name="MyBagsKeyButtonTemplate" inherits="ItemButtonTemplate" virtual="true" id="KEYRING_CONTAINER">
+		<Size x="18" y="39"/>
+		<Scripts>
+			<OnLoad>
+				self.isBag = 1
+				self:SetID(KEYRING_CONTAINER)
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+				self:RegisterForDrag("LeftButton")
+			</OnLoad>
+			<OnClick>
+				mybags = self:GetParent():GetParent().self
+				mybags:BagButton_OnClick(self, button)
+			</OnClick>
+			<OnDragStart>
+				mybags = self:GetParent():GetParent().self
+				mybags:BagButton_OnDragStart(self)
+			</OnDragStart>
+			<OnReceiveDrag>
+				mybags = self:GetParent():GetParent().self
+				mybags:BagButton_OnReceiveDrag(self)
+			</OnReceiveDrag>
+			<OnEnter>
+				mybags = self:GetParent():GetParent().self
+				mybags:BagButton_OnEnter(self)
+			</OnEnter>
+			<OnLeave>
+				mybags = self:GetParent():GetParent().self
+				mybags:BagButton_OnLeave(self)
+			</OnLeave>
+		</Scripts>
+		<NormalTexture file="Interface\Buttons\UI-Button-KeyRing">
+			<TexCoords left="0" right="0.5625" top="0" bottom="0.609375"/>
+		</NormalTexture>
+		<HighlightTexture file="Interface\Buttons\UI-Button-KeyRing-Highlight" alphaMode="ADD">
+			<TexCoords left="0" right="0.5625" top="0" bottom="0.609375"/>
+		</HighlightTexture>
+		<PushedTexture file="Interface\Buttons\UI-Button-KeyRing-Down">
+			<TexCoords left="0" right="0.5625" top="0" bottom="0.609375"/>
+		</PushedTexture>
+	</CheckButton>
 	<Frame name="MyBagsContainerTemplate" virtual="true">
 		<Frames>
 			<Frame name="$parentBackRow1"/>

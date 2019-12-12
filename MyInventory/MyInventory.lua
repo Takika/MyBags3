@@ -30,6 +30,7 @@ local MYINVENTORY_DEFAULT_OPTIONS = {
     ["EnchantColor"]  = nil,
     ["EngColor"]      = nil,
     ["HerbColor"]     = nil,
+    ["KeyRingColor"]  = nil,
     ["Companion"]     = nil,
     ["MAXBAGSLOTS"]   = 36,
     ["_TOPOFFSET"]    = 28,
@@ -561,7 +562,9 @@ function MyInventory:BagIDToInvSlotID(bag)
 end
 
 function MyInventory:IsBagSlotUsable(slot)
-    if (slot >= 0 and slot <= 4) then return true end
+    if (slot >= 0 and slot <= 4 or slot == KEYRING_CONTAINER) then
+        return true
+    end
     return false
 end
 

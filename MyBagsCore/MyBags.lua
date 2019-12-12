@@ -1,5 +1,5 @@
 local MBC = "MyBagsCore-1.2"
-local MBC_MINOR = "2019.08.11.1"
+local MBC_MINOR = "2019.12.12.1"
 
 -- Lua APIs
 local error, assert, pairs, unpack = error, assert, pairs, unpack
@@ -89,6 +89,7 @@ local MYBAGS_ENGINEERCOLOR = { 0.6, 0.0, 0.0 }
 local MYBAGS_HERBCOLOR     = { 0.0, 0.6, 0.0 }
 local MYBAGS_GEMCOLOR      = { 0.0, 0.6, 0.6 }
 local MYBAGS_MININGCOLOR   = { 0.0, 0.0, 0.6 }
+local MYBAGS_KEYRINGCOLOR  = { 0.7, 0.4, 0.4 }
 
 local ACEG_MAP_ONOFF = {
     [0] = "|cffff5050Off|r",
@@ -661,6 +662,9 @@ function MyBagsCore:GetInfoLive(bag, slot)
     else
         -- it's a bag
         i_type = "bag"
+        if (bag == KEYRING_CONTAINER) then
+            i_type = "keyring"
+        end
         count = ContainerFrame_GetContainerNumSlots(bag)
         local itemLink
         local inventoryID = self:BagIDToInvSlotID(bag)
@@ -909,7 +913,7 @@ function MyBagsCore:BagButton_OnEnter(widget)
         end
 
         local invSlot = self:BagIDToInvSlotID(bagID)
-        if not invSlot or (not GameTooltip:SetInventoryItem("player", invSlot)) then
+        if not invSlot or (not GameTooltip:SetInventoryItem("player", invSlot)) or bagID == KEYRING_CONTAINER then
             setTooltip = false
         end
 
@@ -920,6 +924,8 @@ function MyBagsCore:BagButton_OnEnter(widget)
         local ID = select(3, self:GetInfo(bagID))
         if bagID == 0 then
             GameTooltip:SetText(BACKPACK_TOOLTIP, 1.0,1.0,1.0)
+        elseif bagID == KEYRING_CONTAINER then
+                setTooltip = false
         elseif ID then
             local hyperlink = self:GetHyperlink(ID)
             if hyperlink then
@@ -1345,6 +1351,7 @@ function MyBagsCore:LayoutBagFrame(bagFrame)
     local herbColor = ((self.GetOpt("HerbColor")) or MYBAGS_HERBCOLOR)
     local gemColor = ((self.GetOpt("GemColor")) or MYBAGS_GEMCOLOR)
     local miningColor = ((self.GetOpt("MiningColor")) or MYBAGS_MININGCOLOR)
+    local keyringColor = ((self.GetOpt("KeyRingColor")) or MYBAGS_KEYRINGCOLOR)
     self.watchLock = nil
 
     local texture, count, _, locked, _, specialty = self:GetInfo(bagFrame:GetID())
@@ -1374,7 +1381,11 @@ function MyBagsCore:LayoutBagFrame(bagFrame)
                 col = (self.GetOpt("Columns") - self.totalBags - 0.5) / 2
             end
 
-            col = col + bagFrame:GetID() - self.firstBag
+			if bagFrame:GetID() == KEYRING_CONTAINER then
+				col = col + 5 - self.firstBag
+			else
+                col = col + bagFrame:GetID() - self.firstBag
+			end
             bagButton:Show()
             bagButton:ClearAllPoints()
             bagButton:SetPoint("TOPLEFT", self.frameName, "TOPLEFT", self:GetXY(row, col))
@@ -1508,7 +1519,9 @@ function MyBagsCore:LayoutBagFrame(bagFrame)
                     SetItemButtonNormalTextureVertexColor(itemButton, unpack(gemColor))
                 elseif specialty == 8 then
                     SetItemButtonNormalTextureVertexColor(itemButton, unpack(miningColor))
-                end
+                elseif bagFrame:GetID() == KEYRING_CONTAINER then
+					SetItemButtonNormalTextureVertexColor(itemButton, unpack(keyringColor))
+				end
             end
         end
     end
@@ -1538,6 +1551,11 @@ function MyBagsCore:LayoutFrame()
         self:LayoutEquipmentFrame(self)
     else
         if self.reverseOrder then
+			if not self.isBank then
+				bagFrame = _G[self.frameName .. "KeyRing"]
+				bagFrame:SetID(KEYRING_CONTAINER)
+				self:LayoutBagFrame(bagFrame)
+			end
             for bag = self.totalBags - 1, 0, -1  do
                 bagFrame = _G[bagBase .. bag]
                 if (bagFrame) then
@@ -1561,6 +1579,11 @@ function MyBagsCore:LayoutFrame()
                     self:LayoutBagFrame(bagFrame)
                 end
             end
+			if not self.isBank then
+				bagFrame = _G[self.frameName .. "KeyRing"]
+				bagFrame:SetID(KEYRING_CONTAINER)
+				self:LayoutBagFrame(bagFrame)
+			end
         end
     end
 
