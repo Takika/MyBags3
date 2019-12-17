@@ -11,7 +11,7 @@ L["SplitString must be passed a string as the first argument"] = "SplitString mu
 
 -- KEYBINDINGS
 L["BINDING_HEADER_MYBAGSHEADER"] = "My Bags"
-L["BINDING_NAME_MYINVENTORY"]	= "Toggle MyInventory"
+L["BINDING_NAME_MYINVENTORY"]   = "Toggle MyInventory"
 L["BINDING_NAME_MYBANK"] = "Toggle MyBank"
 L["BINDING_NAME_MYEQUIPMENT"] = "Toggle MyEquipment"
 
@@ -29,7 +29,7 @@ L["ACEG_TEXT_NOW_SET_TO"] = "is now set to";
 L["ACEG_TEXT_DEFAULT"] = "default";
 L["ACEG_DISPLAY_OPTION"] = "[|cfff5f530%s|r]";
 L["ACE_CMD_REPORT_NO_VAL"] = "|cffc7c7c7no value|r"
-L["ACE_CMD_RESULT"]	= "|cffffff78%s:|r %s"
+L["ACE_CMD_RESULT"] = "|cffffff78%s:|r %s"
 
 --Titles
 L["MYBAGS_TITLE0"] = ""

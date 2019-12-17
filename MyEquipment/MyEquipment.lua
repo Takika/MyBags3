@@ -20,8 +20,8 @@ local SLOTNAMES             = {
     "TRINKET1SLOT",
     "MAINHANDSLOT",
     "SECONDARYHANDSLOT",
-	"RANGEDSLOT", -- Readded in WoW Classic
-	"AMMOSLOT" -- Readded in WoW Classic
+    "RANGEDSLOT", -- Readded in WoW Classic
+    "AMMOSLOT" -- Readded in WoW Classic
 }
 
 local MYEQUIPMENT_DEFAULT_OPTIONS = {
@@ -621,10 +621,10 @@ function MyEquipment:LayoutEquipmentFrame(self)
         ]]
 
        -- AMMOSLOT readded in WoW Classic
-		if value == "AMMOSLOT" and (hasRelic or hideAmmo) then
-			itemButton:Hide()
-			break
-		end
+        if value == "AMMOSLOT" and (hasRelic or hideAmmo) then
+            itemButton:Hide()
+            break
+        end
 
         if self.curCol >= self.GetOpt("Columns") then
             self.curCol = 0

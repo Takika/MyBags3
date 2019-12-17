@@ -1,413 +1,413 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://www.blizzard.com/wow/ui/FrameXML/UI.xsd">
-	<Script file="MyBags.lua"/>
-	<!-- Templates -->
-	<Button name="MyBagsItemButtonTemplate" inherits="ContainerFrameItemButtonTemplate" virtual="true" hidden="true">
-		<Frames>
-			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
-		</Frames>
-		<Scripts>
-			<OnLoad>
-				mybags = self:GetParent():GetParent().self;
-				mybags:ItemButton_OnLoad(self)
-			</OnLoad>
-			<PostClick>
-				if ( IsModifierKeyDown() ) then
-					mybags = self:GetParent():GetParent().self
-					mybags:ItemButton_OnModifiedClick(self, button)
-				end
-			</PostClick>
-			<OnDragStart>
-				mybags = self:GetParent():GetParent().self
-				mybags:ItemButton_OnDragStart(self)
-			</OnDragStart>
-			<OnReceiveDrag>
-				mybags = self:GetParent():GetParent().self
-				mybags:ItemButton_OnReceiveDrag(self)
-			</OnReceiveDrag>
-			<OnEnter>
-				mybags = self:GetParent():GetParent().self
-				mybags:ItemButton_OnEnter(self)
-			</OnEnter>
-			<OnLeave>
-				mybags = self:GetParent():GetParent().self
-				mybags:ItemButton_OnLeave(self)
-			</OnLeave>
-			<OnUpdate>
-				if ( GameTooltip:IsOwned( self ) ) then
-					mybags = self:GetParent():GetParent().self
-					mybags:ItemButton_OnEnter(self)
-				end
-			</OnUpdate>
-		</Scripts>
-	</Button>
-	<CheckButton name="MyBagsBagButtonTemplate" inherits="ItemButtonTemplate" hidden="true" virtual="true">
-		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
-		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
-		<Scripts>
-			<OnLoad>
-				self.isBag = 1;
-				self:RegisterForClicks("LeftButtonUp", "RightButtonUp")
-				self:RegisterForDrag("LeftButton")
-			</OnLoad>
-			<OnClick>
-				mybags = self:GetParent():GetParent().self
-				mybags:BagButton_OnClick(self, button)
-			</OnClick>
-			<OnDragStart>
-				mybags = self:GetParent():GetParent().self
-				mybags:BagButton_OnDragStart(self)
-			</OnDragStart>
-			<OnReceiveDrag>
-				mybags = self:GetParent():GetParent().self
-				mybags:BagButton_OnReceiveDrag(self)
-			</OnReceiveDrag>
-			<OnEnter>
-				mybags = self:GetParent():GetParent(self).self
-				mybags:BagButton_OnEnter(self)
-			</OnEnter>
-			<OnLeave>
-				mybags = self:GetParent():GetParent(self).self
-				mybags:BagButton_OnLeave(self)
-			</OnLeave>
-		</Scripts>
-	</CheckButton>
-	<CheckButton name="MyBagsKeyButtonTemplate" inherits="ItemButtonTemplate" virtual="true" id="KEYRING_CONTAINER">
-		<Size x="18" y="39"/>
-		<Scripts>
-			<OnLoad>
-				self.isBag = 1
-				self:SetID(KEYRING_CONTAINER)
-				self:RegisterForClicks("LeftButtonUp", "RightButtonUp")
-				self:RegisterForDrag("LeftButton")
-			</OnLoad>
-			<OnClick>
-				mybags = self:GetParent():GetParent().self
-				mybags:BagButton_OnClick(self, button)
-			</OnClick>
-			<OnDragStart>
-				mybags = self:GetParent():GetParent().self
-				mybags:BagButton_OnDragStart(self)
-			</OnDragStart>
-			<OnReceiveDrag>
-				mybags = self:GetParent():GetParent().self
-				mybags:BagButton_OnReceiveDrag(self)
-			</OnReceiveDrag>
-			<OnEnter>
-				mybags = self:GetParent():GetParent().self
-				mybags:BagButton_OnEnter(self)
-			</OnEnter>
-			<OnLeave>
-				mybags = self:GetParent():GetParent().self
-				mybags:BagButton_OnLeave(self)
-			</OnLeave>
-		</Scripts>
-		<NormalTexture file="Interface\Buttons\UI-Button-KeyRing">
-			<TexCoords left="0" right="0.5625" top="0" bottom="0.609375"/>
-		</NormalTexture>
-		<HighlightTexture file="Interface\Buttons\UI-Button-KeyRing-Highlight" alphaMode="ADD">
-			<TexCoords left="0" right="0.5625" top="0" bottom="0.609375"/>
-		</HighlightTexture>
-		<PushedTexture file="Interface\Buttons\UI-Button-KeyRing-Down">
-			<TexCoords left="0" right="0.5625" top="0" bottom="0.609375"/>
-		</PushedTexture>
-	</CheckButton>
-	<Frame name="MyBagsContainerTemplate" virtual="true">
-		<Frames>
-			<Frame name="$parentBackRow1"/>
-			<Frame name="$parentBackRow2"/>
-			<Frame name="$parentBackRow3"/>
-			<CheckButton name="$parentBag" inherits="MyBagsBagButtonTemplate" id="0"/>
-		</Frames>
-	</Frame>
-	<Frame name="MyBagsButtonBarTemplate" hidden="false" virtual="true">
-		<Size>
-			<AbsDimension x="100" y="20"/>
-		</Size>
-		<Anchors>
-			<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT"/>
-		</Anchors>
-		<Frames>
-			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-1" y="-1"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						mybags = self:GetParent():GetParent().self;
-						mybags:Close();
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button name="$parentLockButton" inherits="UIPanelCloseButton">
-				<NormalTexture name="$parentNormalTexture" file="Interface\AddOns\MyBags\Skin\LockButton-Unlocked-Up"/>
-				<PushedTexture name="$parentPushedTexture" file="Interface\AddOns\MyBags\Skin\LockButton-Locked-Down"/>
-				<Anchors>
-					<Anchor point="RIGHT" relativeTo="$parentCloseButton" relativePoint="LEFT">
-						<Offset>
-							<Absdimension x="10" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						mybags = self:GetParent():GetParent().self
-						mybags:LockButton_OnClick()
-					</OnClick>
-				</Scripts>
-			</Button>
-		</Frames>
-	</Frame>
-	<Frame name="MyBagsCharSelectTemplate" virtual="true" hidden="false">
-		<Size>
-			<AbsDimension x="190" y="30"/>
-		</Size>
-		<Anchors>
-			<Anchor point="TOP">
-				<Offset>
-					<AbsDimension x="0" y="-38"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<Frames>
-			<Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true" hidden="false">
-				<Size>
-					<AbsDimension x="150" y="30"/>
-				</Size>
-				<Anchors>
-					<Anchor point="RIGHT">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<FontString name="$parentLabel" inherits="GameFontNormalSmall" text="Select Player:">
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
-									<Offset>
-										<AbsDimension x="18" y="0"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-			</Frame>
-		</Frames>
-	</Frame>
-	<EditBox name="MyBagsSearchBoxTemplate" inherits="BagSearchBoxTemplate" letters="15" hidden="true" virtual="true">
-		<Size x="130" y="20"/>
-		<Scripts>
+     xsi:schemaLocation="http://www.blizzard.com/wow/ui/FrameXML/UI.xsd">
+    <Script file="MyBags.lua"/>
+    <!-- Templates -->
+    <Button name="MyBagsItemButtonTemplate" inherits="ContainerFrameItemButtonTemplate" virtual="true" hidden="true">
+        <Frames>
+            <Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
+        </Frames>
+        <Scripts>
+            <OnLoad>
+                mybags = self:GetParent():GetParent().self;
+                mybags:ItemButton_OnLoad(self)
+            </OnLoad>
+            <PostClick>
+                if ( IsModifierKeyDown() ) then
+                    mybags = self:GetParent():GetParent().self
+                    mybags:ItemButton_OnModifiedClick(self, button)
+                end
+            </PostClick>
+            <OnDragStart>
+                mybags = self:GetParent():GetParent().self
+                mybags:ItemButton_OnDragStart(self)
+            </OnDragStart>
+            <OnReceiveDrag>
+                mybags = self:GetParent():GetParent().self
+                mybags:ItemButton_OnReceiveDrag(self)
+            </OnReceiveDrag>
+            <OnEnter>
+                mybags = self:GetParent():GetParent().self
+                mybags:ItemButton_OnEnter(self)
+            </OnEnter>
+            <OnLeave>
+                mybags = self:GetParent():GetParent().self
+                mybags:ItemButton_OnLeave(self)
+            </OnLeave>
+            <OnUpdate>
+                if ( GameTooltip:IsOwned( self ) ) then
+                    mybags = self:GetParent():GetParent().self
+                    mybags:ItemButton_OnEnter(self)
+                end
+            </OnUpdate>
+        </Scripts>
+    </Button>
+    <CheckButton name="MyBagsBagButtonTemplate" inherits="ItemButtonTemplate" hidden="true" virtual="true">
+        <CheckedTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+        <HighlightTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
+        <Scripts>
+            <OnLoad>
+                self.isBag = 1;
+                self:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+                self:RegisterForDrag("LeftButton")
+            </OnLoad>
+            <OnClick>
+                mybags = self:GetParent():GetParent().self
+                mybags:BagButton_OnClick(self, button)
+            </OnClick>
+            <OnDragStart>
+                mybags = self:GetParent():GetParent().self
+                mybags:BagButton_OnDragStart(self)
+            </OnDragStart>
+            <OnReceiveDrag>
+                mybags = self:GetParent():GetParent().self
+                mybags:BagButton_OnReceiveDrag(self)
+            </OnReceiveDrag>
+            <OnEnter>
+                mybags = self:GetParent():GetParent(self).self
+                mybags:BagButton_OnEnter(self)
+            </OnEnter>
+            <OnLeave>
+                mybags = self:GetParent():GetParent(self).self
+                mybags:BagButton_OnLeave(self)
+            </OnLeave>
+        </Scripts>
+    </CheckButton>
+    <CheckButton name="MyBagsKeyButtonTemplate" inherits="ItemButtonTemplate" virtual="true" id="KEYRING_CONTAINER">
+        <Size x="18" y="39"/>
+        <Scripts>
+            <OnLoad>
+                self.isBag = 1
+                self:SetID(KEYRING_CONTAINER)
+                self:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+                self:RegisterForDrag("LeftButton")
+            </OnLoad>
+            <OnClick>
+                mybags = self:GetParent():GetParent().self
+                mybags:BagButton_OnClick(self, button)
+            </OnClick>
+            <OnDragStart>
+                mybags = self:GetParent():GetParent().self
+                mybags:BagButton_OnDragStart(self)
+            </OnDragStart>
+            <OnReceiveDrag>
+                mybags = self:GetParent():GetParent().self
+                mybags:BagButton_OnReceiveDrag(self)
+            </OnReceiveDrag>
+            <OnEnter>
+                mybags = self:GetParent():GetParent().self
+                mybags:BagButton_OnEnter(self)
+            </OnEnter>
+            <OnLeave>
+                mybags = self:GetParent():GetParent().self
+                mybags:BagButton_OnLeave(self)
+            </OnLeave>
+        </Scripts>
+        <NormalTexture file="Interface\Buttons\UI-Button-KeyRing">
+            <TexCoords left="0" right="0.5625" top="0" bottom="0.609375"/>
+        </NormalTexture>
+        <HighlightTexture file="Interface\Buttons\UI-Button-KeyRing-Highlight" alphaMode="ADD">
+            <TexCoords left="0" right="0.5625" top="0" bottom="0.609375"/>
+        </HighlightTexture>
+        <PushedTexture file="Interface\Buttons\UI-Button-KeyRing-Down">
+            <TexCoords left="0" right="0.5625" top="0" bottom="0.609375"/>
+        </PushedTexture>
+    </CheckButton>
+    <Frame name="MyBagsContainerTemplate" virtual="true">
+        <Frames>
+            <Frame name="$parentBackRow1"/>
+            <Frame name="$parentBackRow2"/>
+            <Frame name="$parentBackRow3"/>
+            <CheckButton name="$parentBag" inherits="MyBagsBagButtonTemplate" id="0"/>
+        </Frames>
+    </Frame>
+    <Frame name="MyBagsButtonBarTemplate" hidden="false" virtual="true">
+        <Size>
+            <AbsDimension x="100" y="20"/>
+        </Size>
+        <Anchors>
+            <Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT"/>
+        </Anchors>
+        <Frames>
+            <Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
+                        <Offset>
+                            <AbsDimension x="-1" y="-1"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                        mybags = self:GetParent():GetParent().self;
+                        mybags:Close();
+                    </OnClick>
+                </Scripts>
+            </Button>
+            <Button name="$parentLockButton" inherits="UIPanelCloseButton">
+                <NormalTexture name="$parentNormalTexture" file="Interface\AddOns\MyBags\Skin\LockButton-Unlocked-Up"/>
+                <PushedTexture name="$parentPushedTexture" file="Interface\AddOns\MyBags\Skin\LockButton-Locked-Down"/>
+                <Anchors>
+                    <Anchor point="RIGHT" relativeTo="$parentCloseButton" relativePoint="LEFT">
+                        <Offset>
+                            <Absdimension x="10" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                        mybags = self:GetParent():GetParent().self
+                        mybags:LockButton_OnClick()
+                    </OnClick>
+                </Scripts>
+            </Button>
+        </Frames>
+    </Frame>
+    <Frame name="MyBagsCharSelectTemplate" virtual="true" hidden="false">
+        <Size>
+            <AbsDimension x="190" y="30"/>
+        </Size>
+        <Anchors>
+            <Anchor point="TOP">
+                <Offset>
+                    <AbsDimension x="0" y="-38"/>
+                </Offset>
+            </Anchor>
+        </Anchors>
+        <Frames>
+            <Frame name="$parentDropDown" inherits="UIDropDownMenuTemplate" enableMouse="true" hidden="false">
+                <Size>
+                    <AbsDimension x="150" y="30"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="RIGHT">
+                        <Offset>
+                            <AbsDimension x="0" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Layers>
+                    <Layer level="BACKGROUND">
+                        <FontString name="$parentLabel" inherits="GameFontNormalSmall" text="Select Player:">
+                            <Anchors>
+                                <Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT">
+                                    <Offset>
+                                        <AbsDimension x="18" y="0"/>
+                                    </Offset>
+                                </Anchor>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+            </Frame>
+        </Frames>
+    </Frame>
+    <EditBox name="MyBagsSearchBoxTemplate" inherits="BagSearchBoxTemplate" letters="15" hidden="true" virtual="true">
+        <Size x="130" y="20"/>
+        <Scripts>
 <!--
-			<OnHide>
-				myedit = self:GetParent().self
-				myedit:BagSearch_OnHide()
-			</OnHide>
+            <OnHide>
+                myedit = self:GetParent().self
+                myedit:BagSearch_OnHide()
+            </OnHide>
 -->
-			<OnTextChanged>
-				myedit = self:GetParent().self
-				myedit:BagSearch_OnTextChanged()
-			</OnTextChanged>
+            <OnTextChanged>
+                myedit = self:GetParent().self
+                myedit:BagSearch_OnTextChanged()
+            </OnTextChanged>
 <!--
-			<OnChar>
-				myedit = self:GetParent().self
-				myedit:BagSearch_OnChar()
-			</OnChar>
-			<OnEnterPressed>
-				myedit = self:GetParent().self
-				myedit:EditBox_ClearFocus()
-			</OnEnterPressed>
-			<OnEditFocusLost>
-				myedit = self:GetParent().self
-				myedit:BagSearch_OnEditFocusLost()
-			</OnEditFocusLost>
+            <OnChar>
+                myedit = self:GetParent().self
+                myedit:BagSearch_OnChar()
+            </OnChar>
+            <OnEnterPressed>
+                myedit = self:GetParent().self
+                myedit:EditBox_ClearFocus()
+            </OnEnterPressed>
+            <OnEditFocusLost>
+                myedit = self:GetParent().self
+                myedit:BagSearch_OnEditFocusLost()
+            </OnEditFocusLost>
 -->
-			<OnEditFocusGained>
-				myedit = self:GetParent().self
-				myedit:BagSearch_OnEditFocusGained()
-			</OnEditFocusGained>
+            <OnEditFocusGained>
+                myedit = self:GetParent().self
+                myedit:BagSearch_OnEditFocusGained()
+            </OnEditFocusGained>
 
-			<OnHide function="BagSearch_OnHide"/>
+            <OnHide function="BagSearch_OnHide"/>
 <!--
 
-			<OnTextChanged function="BagSearch_OnTextChanged"/>
+            <OnTextChanged function="BagSearch_OnTextChanged"/>
 -->
-			<OnChar function="BagSearch_OnChar"/>
-			<OnEnterPressed function="EditBox_ClearFocus"/>
-			<OnEditFocusLost function="SearchBoxTemplate_OnEditFocusLost"/>
+            <OnChar function="BagSearch_OnChar"/>
+            <OnEnterPressed function="EditBox_ClearFocus"/>
+            <OnEditFocusLost function="SearchBoxTemplate_OnEditFocusLost"/>
 <!--
-			<OnEditFocusGained function="BagSearch_OnEditFocusGained"/>
+            <OnEditFocusGained function="BagSearch_OnEditFocusGained"/>
 -->
-		</Scripts>
-	</EditBox>
-	<Frame name="MyBagsFrameTemplate" virtual="true" movable="true" enableMouse="true" toplevel="true" hidden="true">
-		<Backdrop bgFile="Interface\ChatFrame\ChatFrameBackground" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="5" right="5" top="5" bottom="5"/>
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="16"/>
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="16"/>
-			</EdgeSize>
-		</Backdrop>
-		<Layers>
-			<!-- -LITE{{{ -->
+        </Scripts>
+    </EditBox>
+    <Frame name="MyBagsFrameTemplate" virtual="true" movable="true" enableMouse="true" toplevel="true" hidden="true">
+        <Backdrop bgFile="Interface\ChatFrame\ChatFrameBackground" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+            <BackgroundInsets>
+                <AbsInset left="5" right="5" top="5" bottom="5"/>
+            </BackgroundInsets>
+            <TileSize>
+                <AbsValue val="16"/>
+            </TileSize>
+            <EdgeSize>
+                <AbsValue val="16"/>
+            </EdgeSize>
+        </Backdrop>
+        <Layers>
+            <!-- -LITE{{{ -->
 
-			<Layer level="BACKGROUND">
-				<Texture name="$parentPortrait" hidden="false" file="Interface\AddOns\MyBags\Skin\Backpack">
-					<!--   -->
+            <Layer level="BACKGROUND">
+                <Texture name="$parentPortrait" hidden="false" file="Interface\AddOns\MyBags\Skin\Backpack">
+                    <!--   -->
 
-					<Size>
-						<AbsDimension x="58" y="58"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="-5" y="1"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentTextureTopLeft" file="Interface\AddOns\MyBags\Skin\TopLeft" hidden="false">
-					<Size>
-						<AbsDimension x="128" y="128"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="-65" y="58"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentTextureTopRight" file="Interface\AddOns\MyBags\Skin\TopRight" hidden="false">
-					<Size>
-						<AbsDimension x="64" y="128"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPRIGHT">
-							<Offset>
-								<AbsDimension x="36" y="58"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentTextureTopCenter" file="Interface\AddOns\MyBags\Skin\TopCenter" hidden="false">
-					<Size>
-						<AbsDimension x="128" y="128"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentTextureTopLeft" relativePoint="BOTTOMRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentTextureTopRight" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentTextureBottomLeft" file="Interface\AddOns\MyBags\Skin\BottomLeft" hidden="false">
-					<Size>
-						<AbsDimension x="128" y="128"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="-65" y="-60"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentTextureBottomRight" file="Interface\AddOns\MyBags\Skin\BottomRight"
-					 hidden="false">
-					<Size>
-						<AbsDimension x="64" y="128"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset>
-								<AbsDimension x="36" y="-60"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentTextureBottomCenter" file="Interface\AddOns\MyBags\Skin\BottomCenter"
-					 hidden="false">
-					<Size>
-						<AbsDimension x="128" y="128"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTextureBottomLeft" relativePoint="TOPRIGHT"/>
-						<Anchor point="TOPRIGHT" relativeTo="$parentTextureBottomRight" relativePoint="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentTextureLeft" file="Interface\AddOns\MyBags\Skin\Left" hidden="false">
-					<Size>
-						<AbsDimension x="64" y="128"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativeTo="$parentTextureTopLeft" relativePoint="BOTTOMRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentTextureBottomLeft" relativePoint="TOPRIGHT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentTextureRight" file="Interface\AddOns\MyBags\Skin\Right" hidden="false">
-					<Size>
-						<AbsDimension x="64" y="128"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTextureTopRight" relativePoint="BOTTOMLEFT"/>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentTextureBottomRight" relativePoint="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentTextureCenter" file="Interface\AddOns\MyBags\Skin\Center" hidden="false">
-					<Size>
-						<AbsDimension x="128" y="128"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTextureTopCenter" relativePoint="BOTTOMLEFT"/>
-						<Anchor point="TOPRIGHT" relativeTo="$parentTextureTopCenter" relativePoint="BOTTOMRIGHT"/>
-						<Anchor point="BOTTOMLEFT" relativeTo="$parentTextureBottomCenter" relativePoint="TOPLEFT"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentTextureBottomCenter" relativePoint="TOPRIGHT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<!-- }}}-LITE -->
-			<Layer level="ARTWORK">
-				<FontString name="$parentName" inherits="GameFontNormal" justifyH="LEFT">
-					<Color r="1.0" g="1.0" b="1.0"/>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="7" y="-10"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentSlots" inherits="GameFontNormal" justifyH="LEFT">
-					<Color r="1.0" g="1.0" b="1.0"/>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="7" y="10"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Frame name="$parentBag0" inherits="MyBagsContainerTemplate" id="0"/>
-			<Frame name="$parentBag1" inherits="MyBagsContainerTemplate" id="1"/>
-			<Frame name="$parentBag2" inherits="MyBagsContainerTemplate" id="2"/>
-			<Frame name="$parentBag3" inherits="MyBagsContainerTemplate" id="3"/>
-			<Frame name="$parentBag4" inherits="MyBagsContainerTemplate" id="4"/>
-			<Frame name="$parentButtons" inherits="MyBagsButtonBarTemplate"/>
-			<Frame name="$parentCharSelect" inherits="MyBagsCharSelectTemplate"/>
-			<!--
-			<Button name="$parentSortButton">
+                    <Size>
+                        <AbsDimension x="58" y="58"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="-5" y="1"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+                <Texture name="$parentTextureTopLeft" file="Interface\AddOns\MyBags\Skin\TopLeft" hidden="false">
+                    <Size>
+                        <AbsDimension x="128" y="128"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="-65" y="58"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+                <Texture name="$parentTextureTopRight" file="Interface\AddOns\MyBags\Skin\TopRight" hidden="false">
+                    <Size>
+                        <AbsDimension x="64" y="128"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPRIGHT">
+                            <Offset>
+                                <AbsDimension x="36" y="58"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+                <Texture name="$parentTextureTopCenter" file="Interface\AddOns\MyBags\Skin\TopCenter" hidden="false">
+                    <Size>
+                        <AbsDimension x="128" y="128"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="BOTTOMLEFT" relativeTo="$parentTextureTopLeft" relativePoint="BOTTOMRIGHT"/>
+                        <Anchor point="BOTTOMRIGHT" relativeTo="$parentTextureTopRight" relativePoint="BOTTOMLEFT"/>
+                    </Anchors>
+                </Texture>
+                <Texture name="$parentTextureBottomLeft" file="Interface\AddOns\MyBags\Skin\BottomLeft" hidden="false">
+                    <Size>
+                        <AbsDimension x="128" y="128"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="BOTTOMLEFT">
+                            <Offset>
+                                <AbsDimension x="-65" y="-60"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+                <Texture name="$parentTextureBottomRight" file="Interface\AddOns\MyBags\Skin\BottomRight"
+                     hidden="false">
+                    <Size>
+                        <AbsDimension x="64" y="128"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="BOTTOMRIGHT">
+                            <Offset>
+                                <AbsDimension x="36" y="-60"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+                <Texture name="$parentTextureBottomCenter" file="Interface\AddOns\MyBags\Skin\BottomCenter"
+                     hidden="false">
+                    <Size>
+                        <AbsDimension x="128" y="128"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parentTextureBottomLeft" relativePoint="TOPRIGHT"/>
+                        <Anchor point="TOPRIGHT" relativeTo="$parentTextureBottomRight" relativePoint="TOPLEFT"/>
+                    </Anchors>
+                </Texture>
+                <Texture name="$parentTextureLeft" file="Interface\AddOns\MyBags\Skin\Left" hidden="false">
+                    <Size>
+                        <AbsDimension x="64" y="128"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPRIGHT" relativeTo="$parentTextureTopLeft" relativePoint="BOTTOMRIGHT"/>
+                        <Anchor point="BOTTOMRIGHT" relativeTo="$parentTextureBottomLeft" relativePoint="TOPRIGHT"/>
+                    </Anchors>
+                </Texture>
+                <Texture name="$parentTextureRight" file="Interface\AddOns\MyBags\Skin\Right" hidden="false">
+                    <Size>
+                        <AbsDimension x="64" y="128"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parentTextureTopRight" relativePoint="BOTTOMLEFT"/>
+                        <Anchor point="BOTTOMLEFT" relativeTo="$parentTextureBottomRight" relativePoint="TOPLEFT"/>
+                    </Anchors>
+                </Texture>
+                <Texture name="$parentTextureCenter" file="Interface\AddOns\MyBags\Skin\Center" hidden="false">
+                    <Size>
+                        <AbsDimension x="128" y="128"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parentTextureTopCenter" relativePoint="BOTTOMLEFT"/>
+                        <Anchor point="TOPRIGHT" relativeTo="$parentTextureTopCenter" relativePoint="BOTTOMRIGHT"/>
+                        <Anchor point="BOTTOMLEFT" relativeTo="$parentTextureBottomCenter" relativePoint="TOPLEFT"/>
+                        <Anchor point="BOTTOMRIGHT" relativeTo="$parentTextureBottomCenter" relativePoint="TOPRIGHT"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <!-- }}}-LITE -->
+            <Layer level="ARTWORK">
+                <FontString name="$parentName" inherits="GameFontNormal" justifyH="LEFT">
+                    <Color r="1.0" g="1.0" b="1.0"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="7" y="-10"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentSlots" inherits="GameFontNormal" justifyH="LEFT">
+                    <Color r="1.0" g="1.0" b="1.0"/>
+                    <Anchors>
+                        <Anchor point="BOTTOMLEFT">
+                            <Offset>
+                                <AbsDimension x="7" y="10"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Frame name="$parentBag0" inherits="MyBagsContainerTemplate" id="0"/>
+            <Frame name="$parentBag1" inherits="MyBagsContainerTemplate" id="1"/>
+            <Frame name="$parentBag2" inherits="MyBagsContainerTemplate" id="2"/>
+            <Frame name="$parentBag3" inherits="MyBagsContainerTemplate" id="3"/>
+            <Frame name="$parentBag4" inherits="MyBagsContainerTemplate" id="4"/>
+            <Frame name="$parentButtons" inherits="MyBagsButtonBarTemplate"/>
+            <Frame name="$parentCharSelect" inherits="MyBagsCharSelectTemplate"/>
+            <!--
+            <Button name="$parentSortButton">
                 <Size x="28" y="26"/>
                 <NormalTexture atlas="bags-button-autosort-up"/>
                 <PushedTexture atlas="bags-button-autosort-down"/>
@@ -422,84 +422,84 @@
                     <OnLeave/>
                     <OnClick/>
                 </Scripts>
-			</Button>
-			-->
-			<!--
-			<Frame name="$parentTokenFrame">
-				<Size>
-					<AbsDimension x="183" y="32"/>
-				</Size>
-				<Frames>
-					<Button name="$parentToken1" inherits="BackpackTokenTemplate" id="1">
-						<Anchors>
-							<Anchor point="LEFT">
-								<Offset x="13" y="0"/>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="$parentToken2" inherits="BackpackTokenTemplate" id="2">
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentToken1" relativePoint="RIGHT">
-								<Offset x="2" y="0"/>
-							</Anchor>
-						</Anchors>
-					</Button>
-					<Button name="$parentToken3" inherits="BackpackTokenTemplate" id="3">
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="$parentToken2" relativePoint="RIGHT">
-								<Offset x="2" y="0"/>
-							</Anchor>
-						</Anchors>
-					</Button>
-				</Frames>
-			</Frame>
-			-->
-			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate" hidden="false">
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT">
-						<Offset>
-							<AbsDimension x="0" y="8"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Frame>
-			<EditBox name="$parentSearchBox" inherits="MyBagsSearchBoxTemplate" letters="15" hidden="false">
-				<Size x="130" y="20"/>
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeTo="$parentCharSelect" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="-10" y="8"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</EditBox>
-		</Frames>
-		<Scripts>
-			<OnShow>
-				PlaySound(SOUNDKIT.IG_BACKPACK_OPEN)
-			</OnShow>
-			<OnHide>
-				PlaySound(SOUNDKIT.IG_BACKPACK_CLOSE)
-			</OnHide>
-			<OnMouseDown>
-				mybags = self.self
-				if not mybags.GetOpt("Lock") then
-					self:GetParent():StartMoving()
-				end
-			</OnMouseDown>
-			<OnMouseUp>
-				mybags = self.self
-				if not mybags.GetOpt("Lock") then
-					self:GetParent():StopMovingOrSizing()
-				end
-			</OnMouseUp>
-		</Scripts>
-	</Frame>
-	<GameTooltip name="MyBagsHiddenTooltip" inherits="GameTooltipTemplate" parent="UIParent" hidden="true">
-		<Scripts>
-			<OnLoad>
-				self:SetOwner(UIParent, "ANCHOR_NONE");
-			</OnLoad>
-		</Scripts>
-	</GameTooltip>
+            </Button>
+            -->
+            <!--
+            <Frame name="$parentTokenFrame">
+                <Size>
+                    <AbsDimension x="183" y="32"/>
+                </Size>
+                <Frames>
+                    <Button name="$parentToken1" inherits="BackpackTokenTemplate" id="1">
+                        <Anchors>
+                            <Anchor point="LEFT">
+                                <Offset x="13" y="0"/>
+                            </Anchor>
+                        </Anchors>
+                    </Button>
+                    <Button name="$parentToken2" inherits="BackpackTokenTemplate" id="2">
+                        <Anchors>
+                            <Anchor point="LEFT" relativeTo="$parentToken1" relativePoint="RIGHT">
+                                <Offset x="2" y="0"/>
+                            </Anchor>
+                        </Anchors>
+                    </Button>
+                    <Button name="$parentToken3" inherits="BackpackTokenTemplate" id="3">
+                        <Anchors>
+                            <Anchor point="LEFT" relativeTo="$parentToken2" relativePoint="RIGHT">
+                                <Offset x="2" y="0"/>
+                            </Anchor>
+                        </Anchors>
+                    </Button>
+                </Frames>
+            </Frame>
+            -->
+            <Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate" hidden="false">
+                <Anchors>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT">
+                        <Offset>
+                            <AbsDimension x="0" y="8"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Frame>
+            <EditBox name="$parentSearchBox" inherits="MyBagsSearchBoxTemplate" letters="15" hidden="false">
+                <Size x="130" y="20"/>
+                <Anchors>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$parentCharSelect" relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="-10" y="8"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </EditBox>
+        </Frames>
+        <Scripts>
+            <OnShow>
+                PlaySound(SOUNDKIT.IG_BACKPACK_OPEN)
+            </OnShow>
+            <OnHide>
+                PlaySound(SOUNDKIT.IG_BACKPACK_CLOSE)
+            </OnHide>
+            <OnMouseDown>
+                mybags = self.self
+                if not mybags.GetOpt("Lock") then
+                    self:GetParent():StartMoving()
+                end
+            </OnMouseDown>
+            <OnMouseUp>
+                mybags = self.self
+                if not mybags.GetOpt("Lock") then
+                    self:GetParent():StopMovingOrSizing()
+                end
+            </OnMouseUp>
+        </Scripts>
+    </Frame>
+    <GameTooltip name="MyBagsHiddenTooltip" inherits="GameTooltipTemplate" parent="UIParent" hidden="true">
+        <Scripts>
+            <OnLoad>
+                self:SetOwner(UIParent, "ANCHOR_NONE");
+            </OnLoad>
+        </Scripts>
+    </GameTooltip>
 </Ui>

@@ -1381,11 +1381,11 @@ function MyBagsCore:LayoutBagFrame(bagFrame)
                 col = (self.GetOpt("Columns") - self.totalBags - 0.5) / 2
             end
 
-			if bagFrame:GetID() == KEYRING_CONTAINER then
-				col = col + 5 - self.firstBag
-			else
+            if bagFrame:GetID() == KEYRING_CONTAINER then
+                col = col + 5 - self.firstBag
+            else
                 col = col + bagFrame:GetID() - self.firstBag
-			end
+            end
             bagButton:Show()
             bagButton:ClearAllPoints()
             bagButton:SetPoint("TOPLEFT", self.frameName, "TOPLEFT", self:GetXY(row, col))
@@ -1520,8 +1520,8 @@ function MyBagsCore:LayoutBagFrame(bagFrame)
                 elseif specialty == 8 then
                     SetItemButtonNormalTextureVertexColor(itemButton, unpack(miningColor))
                 elseif bagFrame:GetID() == KEYRING_CONTAINER then
-					SetItemButtonNormalTextureVertexColor(itemButton, unpack(keyringColor))
-				end
+                    SetItemButtonNormalTextureVertexColor(itemButton, unpack(keyringColor))
+                end
             end
         end
     end
@@ -1551,11 +1551,11 @@ function MyBagsCore:LayoutFrame()
         self:LayoutEquipmentFrame(self)
     else
         if self.reverseOrder then
-			if not self.isBank then
-				bagFrame = _G[self.frameName .. "KeyRing"]
-				bagFrame:SetID(KEYRING_CONTAINER)
-				self:LayoutBagFrame(bagFrame)
-			end
+            if not self.isBank then
+                bagFrame = _G[self.frameName .. "KeyRing"]
+                bagFrame:SetID(KEYRING_CONTAINER)
+                self:LayoutBagFrame(bagFrame)
+            end
             for bag = self.totalBags - 1, 0, -1  do
                 bagFrame = _G[bagBase .. bag]
                 if (bagFrame) then
@@ -1579,11 +1579,11 @@ function MyBagsCore:LayoutFrame()
                     self:LayoutBagFrame(bagFrame)
                 end
             end
-			if not self.isBank then
-				bagFrame = _G[self.frameName .. "KeyRing"]
-				bagFrame:SetID(KEYRING_CONTAINER)
-				self:LayoutBagFrame(bagFrame)
-			end
+            if not self.isBank then
+                bagFrame = _G[self.frameName .. "KeyRing"]
+                bagFrame:SetID(KEYRING_CONTAINER)
+                self:LayoutBagFrame(bagFrame)
+            end
         end
     end
 
