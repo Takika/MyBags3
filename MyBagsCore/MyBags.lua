@@ -1088,17 +1088,19 @@ function MyBagsCore:LayoutOptions()
                 token:SetParent(self.frameName)
                 token:SetPoint("RIGHT", cash, "LEFT", -10, 0)
                 for i = 1, MAX_WATCHED_TOKENS do
-                    local name, count, icon, currencyID = GetBackpackCurrencyInfo(i)
-                    -- Update watched tokens
+                    local currinfo = C_CurrencyInfo.GetBackpackCurrencyInfo(i)
                     local watchButton = _G[self.frameName .. "TokenFrameToken" .. i]
-                    if (name) then
+                    if currinfo then
+                        local count = currinfo.quantity
+                        local icon = currinfo.iconFileID
+                        local currencyID = currinfo.currencyTypesID
+                        -- Update watched tokens
                         watchButton.icon:SetTexture(icon)
-                        if (count <= 99999) then
-                            watchButton.count:SetText(count)
-                        else
-                            watchButton.count:SetText("*")
+                        local currencyText = BreakUpLargeNumbers(count);
+                        if strlenutf8(currencyText) > 5 then
+                            currencyText = AbbreviateNumbers(count);
                         end
-
+                        watchButton.count:SetText(currencyText);
                         watchButton.currencyID = currencyID
                         watchButton:Show()
                         BackpackTokenFrame.shouldShow = 1
@@ -1272,6 +1274,16 @@ function MyBagsCore:SetFrameMode(mode)
 
     frameTitle:ClearAllPoints()
     frameButtonBar:ClearAllPoints()
+
+    Mixin(frame, BackdropTemplateMixin)
+    frame:SetBackdrop({
+        bgFile="Interface\ChatFrame\ChatFrameBackground",
+        edgeFile="Interface\Tooltips\UI-Tooltip-Border",
+        tile="true",
+        tileSize = 16,
+        edgeSize = 16,
+        insets = {left=5, right=5, top=5, bottom=5},
+    })
 
     if mode == "art" then
         frameTitle:SetPoint("TOPLEFT", frameName, "TOPLEFT", 70, -10)

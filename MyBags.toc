@@ -1,8 +1,8 @@
-## Interface: 80100
+## Interface: 90001
 ## Author: Ramble (modified by Isharra) (updated by thegabbert) (converted to Ace3 by Takika)
 ## Title: MyBags |cff007FFF -Ace3-|r
 ## Notes: Complete Replacement for Inventory and Bank Bags.
-## Version: v80100-1.7.9beta14
+## Version: v90001-1.7.9beta21
 ## OptionalDeps: DataStore, DataStore_Containers, DataStore_Characters
 ## SavedVariables: MyInventoryDB, MyBankDB, MyEquipmentDB
 
