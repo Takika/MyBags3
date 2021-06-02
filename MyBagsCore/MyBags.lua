@@ -1,5 +1,5 @@
-local MBC = "MyBagsCore-1.2"
-local MBC_MINOR = "2019.12.12.1"
+local MBC = "MyBagsCore-2.0"
+local MBC_MINOR = "2021.06.02.1"
 
 -- Lua APIs
 local error, assert, pairs, unpack = error, assert, pairs, unpack
@@ -1261,6 +1261,10 @@ end
 
 function MyBagsCore:SetFrameMode(mode)
     local frame = self.frame
+    if not frame.SetBackdrop then
+        Mixin(frame, BackdropTemplateMixin)
+    end
+
     local frameName = self.frameName
 
     local frameTitle = _G[frameName .. "Name"]

@@ -35,7 +35,7 @@ local MYBANK_DEFAULT_OPTIONS = {
     ["_RIGHTOFFSET"]  = 3,
 }
 
-MyBank = LibStub("AceAddon-3.0"):NewAddon("MyBank", "MyBagsCore-1.2", "AceHook-3.0", "AceEvent-3.0", "AceConsole-3.0")
+MyBank = LibStub("AceAddon-3.0"):NewAddon("MyBank", "MyBagsCore-2.0", "AceHook-3.0", "AceEvent-3.0", "AceConsole-3.0")
 -- local MB_Config = LibStub("AceConfig-3.0")
 local MB_Dialog = LibStub("AceConfigDialog-3.0")
 local MB_Cmd    = LibStub("AceConfigCmd-3.0")

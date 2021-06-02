@@ -47,7 +47,7 @@ local MYEQUIPMENT_DEFAULT_OPTIONS = {
     ["_RIGHTOFFSET"]  = 3,
 }
 
-MyEquipment = LibStub("AceAddon-3.0"):NewAddon("MyEquipment", "AceConsole-3.0", "AceHook-3.0", "AceEvent-3.0", "MyBagsCore-1.2")
+MyEquipment = LibStub("AceAddon-3.0"):NewAddon("MyEquipment", "AceConsole-3.0", "AceHook-3.0", "AceEvent-3.0", "MyBagsCore-2.0")
 local ME_Dialog = LibStub("AceConfigDialog-3.0")
 local ME_Cmd = LibStub("AceConfigCmd-3.0")
 -- local AC = LibStub("AceConsole-3.0")

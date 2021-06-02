@@ -1,6 +1,6 @@
-## Interface: 11303
+## Interface: 20501
 ## Author: Ramble (modified by Isharra) (updated by thegabbert) (converted to Ace3 by Takika)
-## Title: MyBags |cff007FFF -Ace3-|r
+## Title: MyBags |c0000ff00TBC|r
 ## Notes: Complete Replacement for Inventory and Bank Bags.
 ## Version: @project-version@
 ## OptionalDeps: DataStore, DataStore_Containers, DataStore_Characters
