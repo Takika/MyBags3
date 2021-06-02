@@ -42,7 +42,7 @@ local MYINVENTORY_DEFAULT_OPTIONS = {
 MyInventory = LibStub("AceAddon-3.0"):NewAddon("MyInventory", "AceConsole-3.0", "AceHook-3.0", "AceEvent-3.0", "MyBagsCore-2.0")
 local MI_Dialog = LibStub("AceConfigDialog-3.0")
 local MI_Cmd = LibStub("AceConfigCmd-3.0")
-local MB_Core       = LibStub("MyBagsCore-1.2")
+local MB_Core       = LibStub("MyBagsCore-2.0")
 
 local L = LibStub("AceLocale-3.0"):GetLocale("MyBags")
 

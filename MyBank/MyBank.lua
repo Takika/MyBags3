@@ -39,7 +39,7 @@ MyBank = LibStub("AceAddon-3.0"):NewAddon("MyBank", "MyBagsCore-2.0", "AceHook-3
 -- local MB_Config = LibStub("AceConfig-3.0")
 local MB_Dialog = LibStub("AceConfigDialog-3.0")
 local MB_Cmd    = LibStub("AceConfigCmd-3.0")
-local MB_Core   = LibStub("MyBagsCore-1.2")
+local MB_Core   = LibStub("MyBagsCore-2.0")
 
 local L = LibStub("AceLocale-3.0"):GetLocale("MyBags")
 
