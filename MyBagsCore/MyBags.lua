@@ -1277,8 +1277,8 @@ function MyBagsCore:SetFrameMode(mode)
 
     Mixin(frame, BackdropTemplateMixin)
     frame:SetBackdrop({
-        bgFile="Interface\ChatFrame\ChatFrameBackground",
-        edgeFile="Interface\Tooltips\UI-Tooltip-Border",
+        bgFile="Interface\\ChatFrame\\ChatFrameBackground",
+        edgeFile="Interface\\Tooltips\\UI-Tooltip-Border",
         tile="true",
         tileSize = 16,
         edgeSize = 16,
